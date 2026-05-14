@@ -1,0 +1,17 @@
+# Environment & secrets
+.env
+*.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+
+# Script outputs
+output.txt
+output/
+
+# Editor
+.vscode/
+.idea/
+*.swp
