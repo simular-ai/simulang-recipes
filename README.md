@@ -1,2 +1,26 @@
-# simulang-recipes
-Community-built sample apps and recipes using Simulang. Explore what's possible, then build your own!
+# SimuLang Recipes
+
+A collection of community-built automations for [Simulang](https://docs.simular.ai/simulang/simulang-primer). Browse what others have built, grab something useful, or share your own.
+
+## What is Simulang?
+
+Simulang is a CLI tool for automating real desktop apps — your browser, editor, native apps, and more. Scripts are TypeScript/JS files that interact with UIs through OS accessibility APIs, with optional AI-powered vision grounding for trickier elements. Check out the [primer](https://docs.simular.ai/simulang/simulang-primer) to get started.
+
+## Running a Recipe
+
+1. Get Simulang set up — the [primer](https://docs.simular.ai/simulang/simulang-primer) covers installation
+2. Find a recipe below that looks useful
+3. Open its folder and follow the `README.md`
+
+## Recipes
+
+| Recipe | Category | Description |
+|--------|----------|-------------|
+| *(your recipe here)* | | |
+
+Got something to share? We'd love to see it — check out [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Resources
+
+- [Simulang Docs](https://docs.simular.ai/simulang/simulang-primer)
+- [Simular Website](https://www.simular.ai/)
