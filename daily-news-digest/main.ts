@@ -1,0 +1,151 @@
+// Recipe — Daily News Digest
+// Scrapes headlines from CNN, NYT, BBC, The Guardian, and Hacker News,
+// then writes a formatted digest into Apple Notes.
+//
+// Run: simulang run main.ts
+
+import {
+  App,
+  FocusPolicy,
+  Visibility,
+  AccessibilityTree,
+  AriaRole,
+  TraversalOrder,
+  KeyboardController,
+  Clipboard,
+  Key,
+  Direction,
+  type Instance,
+} from '@simular-ai/simulib-js'
+
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
+
+// ─── Text normalisation ───────────────────────────────────────────────────────
+
+function clean(raw: string): string {
+  return raw
+    .replace(/\n+/g, ' ')                            // collapse newlines to space
+    .replace(/\s*\|\s*$/, '')                        // trailing " | " (CNN)
+    .replace(/\s+\d+:\d+$/, '')                      // video duration "1:29" (CNN)
+    .replace(/\s+\d+\s+MIN\s+READ$/i, '')            // " 2 MIN READ" (NYT)
+    .replace(/^LIVE\s+/i, '')                        // "LIVE " prefix (BBC)
+    .replace(/\s+\d+\s+(hr|min)s?\s+ago\b.*/i, '')  // "31 mins ago World…" (BBC)
+    .replace(/[-–—]\s*$/, '')                        // dangling dashes
+    .trim()
+}
+
+// ─── Headline filter ──────────────────────────────────────────────────────────
+
+const NOISE: RegExp[] = [
+  /^skip\s/i,                                          // skip links
+  /^british broadcasting/i,                            // BBC's own name
+  /subscribe/i,                                        // paywall prompts
+  /sign[\s-]?in/i,
+  /log[\s-]?in/i,
+  /\bbutton\b/i,                                       // UI control labels
+  /advertisement/i,
+  /^\d+\s+comments?/i,                                 // "387 comments" (HN)
+  /\d+\s+(hour|hr)s?\s+ago/i,
+  /^\S+\.\S{2,4}$/,                                    // bare domains (HN)
+  /^hacker news$/i,
+  /^(international|technology|sport|culture|travel|food)$/i,
+  /back to home/i,                                     // Guardian nav
+  /^(a|an)\s+(man|woman|person|marble|wooden|large|group|view|photo|statue)/i, // image alt text
+  /^president\s+\w+\s+(of|and)\s+/i,                  // image captions "President X and Y"
+  /^\$[\d.]+/,                                         // price-leading ad text
+  /your world to understand/i,                         // NYT subscription promo
+  /^[A-Z][a-z]+\s+(Mr\.|Ms\.|President|A\s+\w+\s+\w+ing)\s/,  // "Beijing Mr. Trump…" / "Beijing A staff member gesturing" (NYT photo captions)
+  /participates?\s+in\s+a\b/i,                        // "participates in a ceremony" (image alt)
+  /\bas\s+(he|she|they|xi|trump|biden|putin)\s+\w+s\b/i, // "as Xi looks on", "as he boards" (image alt)
+]
+
+function isHeadline(raw: string): boolean {
+  const text = clean(raw)
+  if (text.split(/\s+/).length < 5) return false
+  if (text.length > 280) return false
+  return !NOISE.some((re) => re.test(text))
+}
+
+// ─── Scraping ─────────────────────────────────────────────────────────────────
+
+function openUrl(url: string): Instance {
+  const instance = App.defaultBrowser().open(url, FocusPolicy.Steal, Visibility.Show, true)
+  instance.enableAccessibility()
+  return instance
+}
+
+function scrapeHeadlines(max = 20): string[] {
+  const tree = AccessibilityTree.fromForeground()
+
+  // Prefer semantic heading elements; fall back to links for sites like HN
+  // that don't use <h> tags for stories.
+  let nodes = tree.find(TraversalOrder.DepthFirst, AriaRole.Heading, null, false, max, true)
+  if (nodes.length === 0) {
+    nodes = tree.find(TraversalOrder.DepthFirst, AriaRole.Link, null, false, max * 2, true)
+  }
+
+  return nodes
+    .map((n) => clean(n.name))
+    .filter(isHeadline)
+}
+
+// ─── Sources ──────────────────────────────────────────────────────────────────
+
+const SOURCES = [
+  { label: 'CNN',          url: 'https://edition.cnn.com' },
+  { label: 'NY Times',     url: 'https://www.nytimes.com' },
+  { label: 'BBC News',     url: 'https://www.bbc.com/news' },
+  { label: 'The Guardian', url: 'https://www.theguardian.com/international' },
+  { label: 'Hacker News',  url: 'https://news.ycombinator.com' },
+]
+
+// ─── Collect ──────────────────────────────────────────────────────────────────
+
+console.log('📰  Collecting headlines…\n')
+
+const digest: { source: string; headlines: string[] }[] = []
+
+for (const { label, url } of SOURCES) {
+  process.stdout.write(`  ${label}… `)
+  openUrl(url)
+  await sleep(3500)
+  const headlines = scrapeHeadlines(20)
+  digest.push({ source: label, headlines })
+  console.log(`${headlines.length} headlines`)
+}
+
+// ─── Format ───────────────────────────────────────────────────────────────────
+
+const today = new Date().toLocaleDateString('en-US', {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+})
+const divider = '─'.repeat(44)
+
+let note = `Daily News Digest\n${today}\n${divider}\n\n`
+
+for (const { source, headlines } of digest) {
+  note += `${source.toUpperCase()}\n`
+  note += headlines.length
+    ? headlines.slice(0, 7).map((h) => `  • ${h}`).join('\n') + '\n'
+    : '  (no headlines captured)\n'
+  note += '\n'
+}
+
+note += `${divider}\nGenerated by simulang · ${new Date().toLocaleTimeString()}`
+
+console.log('\n' + note + '\n')
+
+// ─── Write to Apple Notes ─────────────────────────────────────────────────────
+
+console.log('📝  Opening Apple Notes…')
+App.exactName('Notes').open(null, FocusPolicy.Steal, Visibility.Show, true)
+await sleep(1200)
+
+const kb = new KeyboardController()
+kb.key(Key.Meta, Direction.Press)
+kb.key(Key.N, Direction.Click)
+kb.key(Key.Meta, Direction.Release)
+await sleep(600)
+
+new Clipboard().pasteText(note)
+console.log('✅  Done! Your digest is waiting in Apple Notes.')
