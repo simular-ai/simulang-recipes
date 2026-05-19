@@ -15,3 +15,6 @@ output/
 .vscode/
 .idea/
 *.swp
+
+# node_modules
+node_modules/
