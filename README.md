@@ -16,7 +16,7 @@ Simulang is a CLI tool for automating real desktop apps — your browser, editor
 
 | Recipe | Category | Description |
 |--------|----------|-------------|
-| *(your recipe here)* | | |
+| [mac-2048-player](mac-2048-player/) | Games | Expectimax bot that plays 2048 (Mac App Store) using vision grounding for UI navigation and the accessibility tree for board state |
 
 Got something to share? We'd love to see it — check out [CONTRIBUTING.md](CONTRIBUTING.md).
 
