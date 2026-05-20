@@ -147,36 +147,36 @@ export async function clearCart(groundModel: GroundingModel, askModel: AskModel)
 
 // --- Product selection ---
 
+function productSelectionPrompt(item: ShoppingItem): string {
+  return (
+    `I want to buy "${item.name}". Specification: "${item.description}". Total quantity needed: ${item.qty}. ` +
+    `Look at the search results visible on screen right now and pick the best matching product. ` +
+    `IMPORTANT: only select a product you can actually see listed on screen. Do NOT infer or guess from the item name or specification — if the page shows no results, an error, or nothing relevant, you MUST reply with PRODUCT: NONE. ` +
+    `When a match is found, reason about quantity combinations: e.g. if spec says "1L" and qty=3, you could pick 3x 1L or 1x 3L — choose whatever best matches the spec. ` +
+    `Reply in exactly this format:\nPRODUCT: <exact product name as shown on screen, or NONE>\nQTY: <number of units to add>`
+  )
+}
+
+function parseProductResponse(response: string, fallbackQty: number): { productName: string; qty: number } | null {
+  const productName = response.match(/PRODUCT:\s*(.+)/i)?.[1]?.trim() ?? ''
+  const qty = response.match(/QTY:\s*(\d+)/i)?.[1] ? parseInt(response.match(/QTY:\s*(\d+)/i)![1], 10) : fallbackQty
+  if (!productName || productName.toUpperCase() === 'NONE') return null
+  return { productName, qty }
+}
+
 async function selectProduct(
   item: ShoppingItem,
   groundModel: GroundingModel,
   askModel: AskModel,
 ): Promise<{ productName: string; qty: number } | null> {
   await navigateTo(searchUrl(item.name))
-
-  const response = await askScreen(
-    askModel,
-    `I want to buy "${item.name}". Specification: "${item.description}". Total quantity needed: ${item.qty}. ` +
-    `Look at the search results visible on screen right now and pick the best matching product. ` +
-    `IMPORTANT: only select a product you can actually see listed on screen. Do NOT infer or guess from the item name or specification — if the page shows no results, an error, or nothing relevant, you MUST reply with PRODUCT: NONE. ` +
-    `When a match is found, reason about quantity combinations: e.g. if spec says "1L" and qty=3, you could pick 3x 1L or 1x 3L — choose whatever best matches the spec. ` +
-    `Reply in exactly this format:\nPRODUCT: <exact product name as shown on screen, or NONE>\nQTY: <number of units to add>`,
-  )
-
-  const productMatch = response.match(/PRODUCT:\s*(.+)/i)
-  const qtyMatch = response.match(/QTY:\s*(\d+)/i)
-  const productName = productMatch?.[1]?.trim() ?? ''
-  const effectiveQty = qtyMatch ? parseInt(qtyMatch[1], 10) : item.qty
-
-  if (!productName || productName.toUpperCase() === 'NONE') {
-    return null
-  }
-
-  log.debug(`[ask] picked "${productName}" ×${effectiveQty}`)
-  await groundAndClick(groundModel, `Add to cart button under "${productName}"`)
+  const response = await askScreen(askModel, productSelectionPrompt(item))
+  const result = parseProductResponse(response, item.qty)
+  if (!result) return null
+  log.debug(`[ask] picked "${result.productName}" ×${result.qty}`)
+  await groundAndClick(groundModel, `Add to cart button under "${result.productName}"`)
   await sleep(config.pageLoadDelayMs)
-
-  return { productName, qty: effectiveQty }
+  return result
 }
 
 // --- Cart operations ---

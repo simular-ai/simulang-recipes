@@ -25,13 +25,17 @@ const app = express()
 
 // On first run, create save.json and point to it automatically
 const DEFAULT_SAVE_PATH = join(__dirname, '..', '..', 'save.json')
-const pointer = readPointer()
-if (!pointer.savePath || !existsSync(pointer.savePath)) {
-  if (!existsSync(DEFAULT_SAVE_PATH)) {
-    writeSave(DEFAULT_SAVE_PATH, { lastPurchaseDate: null, cartStatus: 'pending', shoppingList: [] })
-    console.log(`→ created save.json at ${DEFAULT_SAVE_PATH}`)
+try {
+  const pointer = readPointer()
+  if (!pointer.savePath || !existsSync(pointer.savePath)) {
+    if (!existsSync(DEFAULT_SAVE_PATH)) {
+      writeSave(DEFAULT_SAVE_PATH, { lastPurchaseDate: null, cartStatus: 'pending', shoppingList: [] })
+      console.log(`→ created save.json at ${DEFAULT_SAVE_PATH}`)
+    }
+    writePointer({ savePath: DEFAULT_SAVE_PATH })
   }
-  writePointer({ savePath: DEFAULT_SAVE_PATH })
+} catch (e) {
+  console.error(`✗ could not initialise save.json: ${(e as Error).message}`)
 }
 
 app.use(express.json())

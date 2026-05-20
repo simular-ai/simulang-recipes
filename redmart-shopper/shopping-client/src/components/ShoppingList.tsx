@@ -33,7 +33,7 @@ export default function ShoppingList({ save, dirty, onChange, onSave, onChangeFi
   }
 
   function addItem() {
-    const item: ShoppingItem = { id: '', name: '', description: '', qty: 1 }
+    const item: ShoppingItem = { id: crypto.randomUUID(), name: '', description: '', qty: 1 }
     onChange({ ...save, shoppingList: [...save.shoppingList, item] })
   }
 
@@ -80,7 +80,7 @@ export default function ShoppingList({ save, dirty, onChange, onSave, onChangeFi
           <tbody>
             {save.shoppingList.map((item, i) => (
               <ItemRow
-                key={item.id || i}
+                key={item.id}
                 item={item}
                 onChange={updated => updateItem(i, updated)}
                 onRemove={() => removeItem(i)}
