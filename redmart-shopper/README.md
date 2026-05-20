@@ -90,6 +90,12 @@ Click **Save** when done. The app also shows:
 simulang run scripts/main.ts -- --force
 ```
 
+Add `--verbose` to see every internal step (model responses, click coordinates, navigation):
+
+```bash
+simulang run scripts/main.ts -- --force --verbose
+```
+
 The `--force` flag bypasses the Saturday and 7-day checks so you can test any day. The bot will:
 1. Clear your Redmart cart
 2. Search for each item on your list
@@ -97,6 +103,17 @@ The `--force` flag bypasses the Saturday and 7-day checks so you can test any da
 4. Open the cart in your browser
 
 Review the cart, then pay normally on Redmart.
+
+#### Log levels
+
+By default the script only prints high-level progress — which items were added and which were skipped. This is all most users need.
+
+| Flag | What you see |
+|------|-------------|
+| *(none)* | Item results only — ✓ added, ⚠ skipped |
+| `--verbose` | Everything: model responses, click coordinates, page navigation |
+
+If you only care about what was skipped, just run without any flag and look for the yellow `⚠` lines.
 
 ---
 

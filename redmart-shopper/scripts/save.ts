@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import type { ShoppingItem } from './shopper.ts'
 import { config } from './config.ts'
+import { log } from './logger.ts'
 
 export interface SaveFile {
   lastPurchaseDate: string | null
@@ -10,7 +11,7 @@ export interface SaveFile {
 
 export function loadSave(): SaveFile {
   if (!existsSync(config.saveFilePath)) {
-    console.error('✗ save.json not found — run the shopping client (npm run client) to create your list first.')
+    log.error('✗ save.json not found — run the shopping client (npm run client) to create your list first.')
     process.exit(1)
   }
   return JSON.parse(readFileSync(config.saveFilePath, 'utf8'))
@@ -27,7 +28,7 @@ export function isShopDue(lastPurchaseDate: string | null, force: boolean): bool
   today.setHours(0, 0, 0, 0)
 
   if (today.getDay() !== 6) {
-    console.log(`  → not Saturday — skipping (next check tomorrow)`)
+    log.info(`not Saturday — skipping (next check tomorrow)`)
     return false
   }
 
@@ -39,8 +40,8 @@ export function isShopDue(lastPurchaseDate: string | null, force: boolean): bool
 
   if (daysSince < 7) {
     const next = nextShopDate(lastPurchaseDate)
-    console.log(`last purchase: ${lastPurchaseDate} (${daysSince} day(s) ago)`)
-    console.log(`next shop due: ${next.toDateString()} — use --force to run anyway.`)
+    log.info(`last purchase: ${lastPurchaseDate} (${daysSince} day(s) ago)`)
+    log.info(`next shop due: ${next.toDateString()} — use --force to run anyway.`)
     return false
   }
 

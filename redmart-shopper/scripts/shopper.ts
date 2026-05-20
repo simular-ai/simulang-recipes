@@ -15,6 +15,7 @@ import {
 } from '@simular-ai/simulang-js'
 import { execSync } from 'child_process'
 import { config } from './config.ts'
+import { log } from './logger.ts'
 
 export interface ShoppingItem {
   id: string
@@ -48,7 +49,7 @@ function getBrowserScreen(): Screen {
       }
     } catch {}
   }
-  console.warn('  ⚠ could not detect browser screen position — falling back to main screen')
+  log.warn('⚠ could not detect browser screen position — falling back to main screen')
   return Screen.mainScreen()
 }
 
@@ -64,7 +65,7 @@ async function withRetry<T>(label: string, fn: () => T, retries = 2): Promise<T>
       return fn()
     } catch (err) {
       if (attempt === retries) throw err
-      console.warn(`  ⚠ ${label} failed (attempt ${attempt + 1}), retrying...`)
+      log.warn(`⚠ ${label} failed (attempt ${attempt + 1}), retrying...`)
       await sleep(2000)
     }
   }
@@ -76,7 +77,7 @@ async function groundAndClick(groundModel: GroundingModel, concept: string) {
   await sleep(300)
   const { screenshot } = takeScreenshot()
   const [x, y] = await withRetry(`ground("${concept}")`, () => screenshot.ground(groundModel, concept))
-  console.log(`  → [vision] "${concept}" at (${x}, ${y})`)
+  log.debug(`[vision] "${concept}" → (${x}, ${y})`)
   clickAt(x, y)
 }
 
@@ -85,7 +86,7 @@ async function askScreen(askModel: AskModel, prompt: string): Promise<string> {
   await sleep(300)
   const { image } = takeScreenshot()
   const answer = await withRetry('askModel', () => askModel.ask(prompt, null, [image]))
-  console.log(`  → [ask] "${prompt.slice(0, 60)}..." → "${answer.replace(/\n/g, '\\n')}"`)
+  log.debug(`[ask] "${prompt.slice(0, 60)}..." → "${answer.replace(/\n/g, '\\n')}"`)
   return answer
 }
 
@@ -94,6 +95,7 @@ function refocusBrowser() {
 }
 
 async function navigateTo(url: string) {
+  log.debug(`[nav] ${url}`)
   refocusBrowser()
   await sleep(300)
   const kb = new KeyboardController()
@@ -113,7 +115,7 @@ function searchUrl(query: string): string {
 // --- Cart clearing ---
 
 export async function clearCart(groundModel: GroundingModel, askModel: AskModel) {
-  console.log('→ clearing cart...')
+  log.info('→ clearing cart...')
   await navigateTo(config.redmartCartUrl)
 
   const cartState = await askScreen(
@@ -125,7 +127,7 @@ export async function clearCart(groundModel: GroundingModel, askModel: AskModel)
   )
 
   if (cartState.toLowerCase().includes('empty')) {
-    console.log('  → cart already empty, skipping clear')
+    log.debug('cart already empty')
     return
   }
 
@@ -140,13 +142,16 @@ export async function clearCart(groundModel: GroundingModel, askModel: AskModel)
   await groundAndClick(groundModel, 'REMOVE button in blue')
   await sleep(600)
 
-  console.log('  ✓ cart cleared')
+  log.ok('  ✓ cart cleared')
 }
 
 // --- Product selection ---
 
-async function selectProduct(item: ShoppingItem, groundModel: GroundingModel, askModel: AskModel): Promise<number | null> {
-  console.log(`  → searching: ${searchUrl(item.name)}`)
+async function selectProduct(
+  item: ShoppingItem,
+  groundModel: GroundingModel,
+  askModel: AskModel,
+): Promise<{ productName: string; qty: number } | null> {
   await navigateTo(searchUrl(item.name))
 
   const response = await askScreen(
@@ -167,11 +172,11 @@ async function selectProduct(item: ShoppingItem, groundModel: GroundingModel, as
     return null
   }
 
-  console.log(`  → [ask] product: "${productName}", qty to add: ${effectiveQty}`)
+  log.debug(`[ask] picked "${productName}" ×${effectiveQty}`)
   await groundAndClick(groundModel, `Add to cart button under "${productName}"`)
   await sleep(config.pageLoadDelayMs)
 
-  return effectiveQty
+  return { productName, qty: effectiveQty }
 }
 
 // --- Cart operations ---
@@ -179,7 +184,7 @@ async function selectProduct(item: ShoppingItem, groundModel: GroundingModel, as
 async function setQuantity(item: ShoppingItem, groundModel: GroundingModel) {
   if (item.qty === 1) return
 
-  console.log(`  → setting qty to ${item.qty} via stepper`)
+  log.debug(`[qty] incrementing to ${item.qty}`)
   for (let i = 1; i < item.qty; i++) {
     await groundAndClick(groundModel, 'quantity increase button +')
     await sleep(400)
@@ -188,14 +193,19 @@ async function setQuantity(item: ShoppingItem, groundModel: GroundingModel) {
 
 // --- Per-item flow ---
 
-async function addItemToCart(item: ShoppingItem, groundModel: GroundingModel, askModel: AskModel) {
-  const effectiveQty = await selectProduct(item, groundModel, askModel)
-  if (effectiveQty === null) {
-    console.log(`  ⚠ skipped ${item.name} — no matching product found`)
-    return
+async function addItemToCart(
+  item: ShoppingItem,
+  groundModel: GroundingModel,
+  askModel: AskModel,
+): Promise<boolean> {
+  const result = await selectProduct(item, groundModel, askModel)
+  if (!result) {
+    log.warn(`  ⚠ skipped — not found on Redmart`)
+    return false
   }
-  await setQuantity({ ...item, qty: effectiveQty }, groundModel)
-  console.log(`  ✓ added ${item.name}`)
+  await setQuantity({ ...item, qty: result.qty }, groundModel)
+  log.ok(`  ✓ added ${result.qty}× ${result.productName}`)
+  return true
 }
 
 // --- Entry point ---
@@ -206,9 +216,20 @@ export async function shop(shoppingList: ShoppingItem[]): Promise<void> {
 
   await clearCart(groundModel, askModel)
 
-  for (const item of shoppingList) {
-    console.log(`\n[${item.name}] qty=${item.qty}`)
-    await addItemToCart(item, groundModel, askModel)
+  let added = 0
+  for (let i = 0; i < shoppingList.length; i++) {
+    const item = shoppingList[i]
+    log.info(`\n[${i + 1}/${shoppingList.length}] ${item.name}`)
+    if (await addItemToCart(item, groundModel, askModel)) added++
     await sleep(config.delayBetweenItemsMs)
+  }
+
+  const skipped = shoppingList.length - added
+  log.rule()
+  if (skipped === 0) {
+    log.ok(`✓ all ${added} items added to cart`)
+  } else {
+    log.ok(`✓ ${added} added`)
+    log.warn(`⚠ ${skipped} skipped — not found on Redmart`)
   }
 }
