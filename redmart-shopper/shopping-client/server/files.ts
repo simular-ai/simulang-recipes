@@ -25,6 +25,19 @@ export function validateSave(data: unknown): string | null {
   const d = data as Record<string, unknown>
   if (!Array.isArray(d.shoppingList))
     return 'Missing or invalid "shoppingList" array'
+  for (let i = 0; i < d.shoppingList.length; i++) {
+    const item = d.shoppingList[i] as Record<string, unknown>
+    if (typeof item !== 'object' || item === null)
+      return `shoppingList[${i}] is not an object`
+    if (typeof item.id !== 'string' || !item.id.trim())
+      return `shoppingList[${i}].id must be a non-empty string`
+    if (typeof item.name !== 'string' || !item.name.trim())
+      return `shoppingList[${i}].name must be a non-empty string`
+    if (typeof item.description !== 'string')
+      return `shoppingList[${i}].description must be a string`
+    if (typeof item.qty !== 'number' || !Number.isInteger(item.qty) || item.qty < 1)
+      return `shoppingList[${i}].qty must be a positive integer`
+  }
   if (!('lastPurchaseDate' in d))
     return 'Missing "lastPurchaseDate" field'
   if (!['pending', 'adding', 'ready', 'error'].includes(d.cartStatus as string))

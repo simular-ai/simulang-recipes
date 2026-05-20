@@ -13,6 +13,7 @@ import {
   screenshotFull,
   Screen,
 } from '@simular-ai/simulang-js'
+import { execSync } from 'child_process'
 import { config } from './config.ts'
 
 export interface ShoppingItem {
@@ -32,17 +33,49 @@ function clickAt(x: number, y: number) {
   mouse.button(Button.Left, Direction.Click)
 }
 
+function getBrowserScreen(): Screen {
+  for (const browser of ['Safari', 'Google Chrome']) {
+    try {
+      const result = execSync(
+        `osascript -e 'tell application "${browser}" to get bounds of front window'`,
+        { stdio: 'pipe' }
+      ).toString().trim()
+      const [left, top, right, bottom] = result.split(',').map(s => parseInt(s.trim()))
+      if ([left, top, right, bottom].every(n => !isNaN(n))) {
+        const mouse = new MouseController()
+        mouse.moveMouse(Math.round((left + right) / 2), Math.round((top + bottom) / 2), 0)
+        return Screen.fromCurrentMouseLocation()
+      }
+    } catch {}
+  }
+  console.warn('  ⚠ could not detect browser screen position — falling back to main screen')
+  return Screen.mainScreen()
+}
+
 function takeScreenshot(): { screenshot: ReturnType<typeof screenshotFull>; image: Image } {
-  const screenshot = screenshotFull(true, Screen.mainScreen())
+  const screenshot = screenshotFull(true, getBrowserScreen())
   const image = Image.fromBase64(screenshot.base64())
   return { screenshot, image }
+}
+
+async function withRetry<T>(label: string, fn: () => T, retries = 2): Promise<T> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return fn()
+    } catch (err) {
+      if (attempt === retries) throw err
+      console.warn(`  ⚠ ${label} failed (attempt ${attempt + 1}), retrying...`)
+      await sleep(2000)
+    }
+  }
+  throw new Error('unreachable')
 }
 
 async function groundAndClick(groundModel: GroundingModel, concept: string) {
   refocusBrowser()
   await sleep(300)
   const { screenshot } = takeScreenshot()
-  const [x, y] = screenshot.ground(groundModel, concept)
+  const [x, y] = await withRetry(`ground("${concept}")`, () => screenshot.ground(groundModel, concept))
   console.log(`  → [vision] "${concept}" at (${x}, ${y})`)
   clickAt(x, y)
 }
@@ -51,9 +84,8 @@ async function askScreen(askModel: AskModel, prompt: string): Promise<string> {
   refocusBrowser()
   await sleep(300)
   const { image } = takeScreenshot()
-  const answer = askModel.ask(prompt, null, [image])
+  const answer = await withRetry('askModel', () => askModel.ask(prompt, null, [image]))
   console.log(`  → [ask] "${prompt.slice(0, 60)}..." → "${answer.replace(/\n/g, '\\n')}"`)
-
   return answer
 }
 
@@ -120,9 +152,9 @@ async function selectProduct(item: ShoppingItem, groundModel: GroundingModel, as
   const response = await askScreen(
     askModel,
     `I want to buy "${item.name}". Specification: "${item.description}". Total quantity needed: ${item.qty}. ` +
-    `Looking at these search results, pick the best product and work out how many units to add to cart. ` +
-    `Reason about combinations: e.g. if spec says "1L" and qty=3, you could pick 3x 1L or 1x 3L — choose whatever best matches the spec. ` +
-    `If no suitable product is found, reply with PRODUCT: NONE. ` +
+    `Look at the search results visible on screen right now and pick the best matching product. ` +
+    `IMPORTANT: only select a product you can actually see listed on screen. Do NOT infer or guess from the item name or specification — if the page shows no results, an error, or nothing relevant, you MUST reply with PRODUCT: NONE. ` +
+    `When a match is found, reason about quantity combinations: e.g. if spec says "1L" and qty=3, you could pick 3x 1L or 1x 3L — choose whatever best matches the spec. ` +
     `Reply in exactly this format:\nPRODUCT: <exact product name as shown on screen, or NONE>\nQTY: <number of units to add>`,
   )
 

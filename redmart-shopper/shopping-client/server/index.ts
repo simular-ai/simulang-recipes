@@ -23,6 +23,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const PORT = 4359
 const app = express()
 
+// On first run, create save.json and point to it automatically
+const DEFAULT_SAVE_PATH = join(__dirname, '..', '..', 'save.json')
+const pointer = readPointer()
+if (!pointer.savePath || !existsSync(pointer.savePath)) {
+  if (!existsSync(DEFAULT_SAVE_PATH)) {
+    writeSave(DEFAULT_SAVE_PATH, { lastPurchaseDate: null, cartStatus: 'pending', shoppingList: [] })
+    console.log(`→ created save.json at ${DEFAULT_SAVE_PATH}`)
+  }
+  writePointer({ savePath: DEFAULT_SAVE_PATH })
+}
+
 app.use(express.json())
 
 // Serve built React app (production)
@@ -90,4 +101,11 @@ if (existsSync(distPath)) {
 
 app.listen(PORT, () => {
   console.log(`→ shopping client: http://localhost:${PORT}`)
+}).on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`✗ Port ${PORT} is already in use — is the shopping client already running?`)
+    console.error(`  To kill it: lsof -ti:${PORT} | xargs kill`)
+    process.exit(1)
+  }
+  throw err
 })

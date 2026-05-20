@@ -20,7 +20,10 @@ A weekly grocery automation for Redmart (Lazada SG). Manage your shopping list i
 ### Prerequisites
 
 - [simulang](https://simulang.dev) installed — run `simulang --version` in your terminal to check
-- macOS with screen recording permission granted to your terminal app (System Settings → Privacy & Security → Screen Recording)
+- macOS with the following permissions granted to your terminal app (System Settings → Privacy & Security):
+  - **Screen Recording** — so the script can take screenshots
+  - **Automation** — so the script can locate the browser window via AppleScript
+- **Safari or Chrome only** — the script uses AppleScript to locate the browser window; Firefox, Edge, and Brave are not supported
 - Logged in to your Redmart account in Safari or Chrome
 - An [OpenRouter](https://openrouter.ai) API key (free tier works)
 
@@ -46,8 +49,7 @@ echo 'export OPENROUTER_API_KEY=your_key_here' >> ~/.zshrc
 
 ```bash
 cd redmart-shopper
-npm install
-cd shopping-client && npm install && cd ..
+npm install && npm install --prefix shopping-client
 ```
 
 ---
