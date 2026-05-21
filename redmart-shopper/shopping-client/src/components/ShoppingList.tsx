@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import type { SaveFile, ShoppingItem } from '../types.ts'
+import { slugify } from '../utils/slugify.ts'
 import ItemRow from './ItemRow.tsx'
 import MetaBar from './MetaBar.tsx'
 
@@ -9,10 +10,6 @@ interface Props {
   onChange: (save: SaveFile) => void
   onSave: (save: SaveFile) => Promise<void>
   onChangeFile: () => void
-}
-
-function slugify(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
 export default function ShoppingList({ save, dirty, onChange, onSave, onChangeFile }: Props) {

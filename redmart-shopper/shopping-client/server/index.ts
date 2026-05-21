@@ -5,6 +5,7 @@ import { existsSync } from 'fs'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { readPointer, writePointer, readSave, writeSave, validateSave } from './files.ts'
+import { sendMessage, confirmRemoval, denyRemoval, resetConversation } from './chat.ts'
 
 const execAsync = promisify(exec)
 
@@ -38,7 +39,7 @@ try {
   console.error(`✗ could not initialise save.json: ${(e as Error).message}`)
 }
 
-app.use(express.json())
+app.use(express.json({ limit: '50mb' }))
 
 // Serve built React app (production)
 const distPath = join(__dirname, '..', 'dist')
@@ -89,6 +90,21 @@ app.put('/api/save', (req, res) => {
   writeSave(savePath, req.body)
   res.json({ ok: true })
 })
+
+app.post('/api/chat', async (req, res) => {
+  const { text, attachments } = req.body
+  if (typeof text !== 'string') { res.status(400).json({ error: 'text must be a string' }); return }
+  if (!Array.isArray(attachments)) { res.status(400).json({ error: 'attachments must be an array' }); return }
+  try {
+    res.json(await sendMessage(text, attachments))
+  } catch (e) {
+    res.status(500).json({ error: (e as Error).message })
+  }
+})
+
+app.post('/api/chat/confirm-removal', (_req, res) => { confirmRemoval(); res.json({ ok: true }) })
+app.post('/api/chat/deny-removal',    (_req, res) => { denyRemoval();    res.json({ ok: true }) })
+app.delete('/api/chat',               (_req, res) => { resetConversation(); res.json({ ok: true }) })
 
 app.post('/api/pick-file', async (_req, res) => {
   const path = await openFilePicker()

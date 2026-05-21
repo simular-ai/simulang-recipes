@@ -1,4 +1,4 @@
-import type { Pointer, SaveFile } from './types'
+import type { Pointer, SaveFile, ShoppingItem } from './types'
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`/api${path}`, options)
@@ -30,4 +30,20 @@ export const api = {
 
   pickFile: () =>
     request<{ path: string | null }>('/pick-file', { method: 'POST' }),
+
+  chat: (text: string, attachments: Array<{ name: string; mediaType: string; base64: string }>) =>
+    request<{ reply: string; pendingRemovals: ShoppingItem[] }>('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, attachments }),
+    }),
+
+  chatConfirmRemoval: () =>
+    request<{ ok: true }>('/chat/confirm-removal', { method: 'POST' }),
+
+  chatDenyRemoval: () =>
+    request<{ ok: true }>('/chat/deny-removal', { method: 'POST' }),
+
+  chatReset: () =>
+    request<{ ok: true }>('/chat', { method: 'DELETE' }),
 }

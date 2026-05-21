@@ -2,11 +2,6 @@
 
 A weekly grocery automation for Redmart (Lazada SG). Manage your shopping list in a local web app, then let a Simulang script fill your Redmart cart every Saturday. You review and pay — the bot does everything else.
 
-## Demo
-
-<!-- A GIF or video showing the automation running -->
-![Demo](demo.gif)
-
 ## Key APIs Used
 
 - `AskModel.ask()` — reasons about search results to pick the best product and quantity combination
@@ -81,6 +76,28 @@ Click **Save** when done. The app also shows:
 - **Last purchase** — when the bot last ran
 - **Next purchase** — the next Saturday the bot is due to run (turns red if overdue)
 - **Cart status** — whether the bot is currently running, ready for payment, or errored
+
+---
+
+### Step 3b — Use the AI chat assistant (optional)
+
+The shopping client includes a built-in chat assistant powered by Claude. You can describe what you eat, upload photos of your fridge or receipts, and it will automatically update your shopping list.
+
+**What it can do:**
+- Add or update items from a conversation ("I eat oat milk every day")
+- Read receipt photos to figure out what you buy and how often
+- Infer reasonable weekly quantities from context — if a receipt shows 2 packs bought this month, it'll work out the right weekly cadence
+- Ask for confirmation before removing anything
+
+**How to use it:**
+- Open the shopping client and you'll see the chat panel on the right
+- Type a message, or click **⊕** to attach a photo (fridge, receipt, snack bar before/after, etc.)
+- The list updates live as the assistant processes your request
+- Removals show a confirm prompt before anything is deleted
+
+The assistant maintains a continuous conversation — you can upload a receipt, then follow up with "actually make that 2 per week", and it remembers the context.
+
+**Note:** The same `OPENROUTER_API_KEY` from Step 1 is used. No additional setup needed.
 
 ---
 

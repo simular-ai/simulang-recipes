@@ -120,10 +120,13 @@ export async function clearCart(groundModel: GroundingModel, askModel: AskModel)
 
   const cartState = await askScreen(
     askModel,
-    'Look at this shopping cart. Answer exactly one of: ' +
-    '"empty" if there are no items, ' +
-    '"selected" if there are items and SELECT ALL is already checked orange, ' +
-    '"unselected" if there are items and SELECT ALL is NOT checked.',
+    'Look at this Redmart shopping cart page carefully. ' +
+    'Find the SELECT ALL checkbox near the top left of the item list. ' +
+    'Answer exactly one word — nothing else: ' +
+    '"empty" if there are no items in the cart at all, ' +
+    '"selected" if the SELECT ALL checkbox is filled/ticked with an orange checkmark, ' +
+    '"unselected" if the SELECT ALL checkbox is empty, hollow, grey, or unchecked in any way. ' +
+    'When in doubt, answer "empty".',
   )
 
   if (cartState.toLowerCase().includes('empty')) {
@@ -149,10 +152,13 @@ export async function clearCart(groundModel: GroundingModel, askModel: AskModel)
 
 function productSelectionPrompt(item: ShoppingItem): string {
   return (
-    `I want to buy "${item.name}". Specification: "${item.description}". Total quantity needed: ${item.qty}. ` +
-    `Look at the search results visible on screen right now and pick the best matching product. ` +
-    `IMPORTANT: only select a product you can actually see listed on screen. Do NOT infer or guess from the item name or specification — if the page shows no results, an error, or nothing relevant, you MUST reply with PRODUCT: NONE. ` +
-    `When a match is found, reason about quantity combinations: e.g. if spec says "1L" and qty=3, you could pick 3x 1L or 1x 3L — choose whatever best matches the spec. ` +
+    `I want to buy "${item.name}". Specification: "${item.description}". Weekly target: ${item.qty}. ` +
+    `Look at the search results on screen and pick the best matching product. ` +
+    `Only select a product you can actually see on screen — if there are no results or nothing relevant, reply PRODUCT: NONE. ` +
+    `Choose like a practical shopper: prefer products that match the specification, but sensible substitutions are fine. The weekly target is a guide — rounding to a nearby pack size is fine, but do not buy bulk quantities that far exceed it. If the smallest available pack already delivers more than twice the weekly target, prefer a different product or reply PRODUCT: NONE. ` +
+    `For QTY: figure out how many units delivers roughly the weekly target for one week. Do this in two steps — first convert volumes if sizes differ, then divide by pack size. ` +
+    `Example: target 6× 320ml cans; only a 24-pack available → that is 4 weeks of supply, way too much → look for a smaller pack or reply PRODUCT: NONE. ` +
+    `Example: target 6× 320ml cans; 6-pack available → QTY: 1. ` +
     `Reply in exactly this format:\nPRODUCT: <exact product name as shown on screen, or NONE>\nQTY: <number of units to add>`
   )
 }
