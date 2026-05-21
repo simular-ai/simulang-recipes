@@ -1,5 +1,5 @@
 import { App, FocusPolicy, Visibility, initLogger as initSimulangLogger } from '@simular-ai/simulang-js'
-import { shop } from './shopper.ts'
+import { shop, UserEscapeError } from './shopper.ts'
 import { loadSave, writeSave, isShopDue } from './save.ts'
 import { config } from './config.ts'
 import { initLogger, log } from './logger.ts'
@@ -41,7 +41,13 @@ try {
   writeSave(save)
   log.ok('\n✓ cart is ready — review and pay on Redmart.')
 } catch (err) {
-  save.cartStatus = 'error'
-  writeSave(save)
-  log.error(`\n✗ run failed: ${err}`)
+  if (err instanceof UserEscapeError) {
+    save.cartStatus = 'pending'
+    writeSave(save)
+    log.warn('\n⚠ run cancelled — cursor moved to screen corner')
+  } else {
+    save.cartStatus = 'error'
+    writeSave(save)
+    log.error(`\n✗ run failed: ${err}`)
+  }
 }

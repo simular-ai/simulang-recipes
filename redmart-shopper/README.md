@@ -1,6 +1,10 @@
 # Redmart Shopper
 
-A weekly grocery automation for Redmart (Lazada SG). Manage your shopping list in a local web app, then let a Simulang script fill your Redmart cart every Saturday. You review and pay — the bot does everything else.
+Weekly grocery automation for Redmart (Lazada SG). Manage your shopping list in a local web app, then let a Simulang script fill your Redmart cart every Saturday. Review and pay — the bot does the rest.
+
+## Demo
+
+![Demo](demo.gif)
 
 ## Key APIs Used
 
@@ -12,169 +16,49 @@ A weekly grocery automation for Redmart (Lazada SG). Manage your shopping list i
 
 ## How to Run
 
-### Prerequisites
-
-- [simulang](https://simulang.dev) installed — run `simulang --version` in your terminal to check
-- macOS with the following permissions granted to your terminal app (System Settings → Privacy & Security):
-  - **Screen Recording** — so the script can take screenshots
-  - **Automation** — so the script can locate the browser window via AppleScript
-- **Safari or Chrome only** — the script uses AppleScript to locate the browser window; Firefox, Edge, and Brave are not supported
+**Prerequisites:**
+- simulang installed and logged in (`simulang --version` to check)
+- macOS with **Screen Recording** and **Automation** permissions granted to your terminal (System Settings → Privacy & Security)
+- Safari or Chrome — the script uses AppleScript to locate the browser window; other browsers are not supported
 - Logged in to your Redmart account in Safari or Chrome
-- An [OpenRouter](https://openrouter.ai) API key (free tier works)
+- Node.js 22+
 
----
+**Steps:**
+1. `cd redmart-shopper`
+2. `npm install`
+3. `npm run client` — builds and starts the shopping list app at **http://localhost:4359**
+4. Add your groceries in the app, then click **Save**
+5. Test run: `simulang run scripts/main.ts -- --force`
 
-### Step 1 — Set your API key
-
-Open your terminal and run:
-
-```bash
-export OPENROUTER_API_KEY=your_key_here
-```
-
-To make this permanent (so you don't have to do it every time), add that line to your shell profile:
-
-```bash
-echo 'export OPENROUTER_API_KEY=your_key_here' >> ~/.zshrc
-```
-
----
-
-### Step 2 — Install dependencies
-
-```bash
-cd redmart-shopper
-npm install && npm install --prefix shopping-client
-```
-
----
-
-### Step 3 — Set up your shopping list
-
-Start the shopping list app:
-
-```bash
-npm run client
-```
-
-Then open **http://localhost:4359** in your browser.
-
-**First time only:**
-1. Click **Browse…** — a Finder window will open
-2. Navigate to the `redmart-shopper` folder and select `save.json`
-3. Click **Connect**
-
-You'll now see your shopping list. Click **+ Add item** to add groceries:
+Each item has three fields:
 
 | Field | What to enter |
 |-------|---------------|
-| **Name** | What you call the item, e.g. `Oat Milk` |
-| **Description** | Specific details for the bot, e.g. `Oatside 1L oat milk` — the bot uses this to pick the right product and size |
-| **Qty** | How many you want. If the description says `1L` and qty is `3`, the bot will pick 3× 1L or 1× 3L, whichever makes more sense |
+| **Name** | What you call it, e.g. `Oat Milk` |
+| **Description** | Specific details for the bot, e.g. `Oatside 1L oat milk` — the more specific, the better |
+| **Qty** | Weekly quantity. If the description says `1L` and qty is `3`, the bot will pick 3× 1L or 1× 3L, whichever makes more sense |
 
-Click **Save** when done. The app also shows:
-- **Last purchase** — when the bot last ran
-- **Next purchase** — the next Saturday the bot is due to run (turns red if overdue)
-- **Cart status** — whether the bot is currently running, ready for payment, or errored
+**Chat assistant (optional):** the app has a built-in chat panel. Describe what you eat, upload receipt or fridge photos, and it will update your list automatically.
 
----
-
-### Step 3b — Use the AI chat assistant (optional)
-
-The shopping client includes a built-in chat assistant powered by Claude. You can describe what you eat, upload photos of your fridge or receipts, and it will automatically update your shopping list.
-
-**What it can do:**
-- Add or update items from a conversation ("I eat oat milk every day")
-- Read receipt photos to figure out what you buy and how often
-- Infer reasonable weekly quantities from context — if a receipt shows 2 packs bought this month, it'll work out the right weekly cadence
-- Ask for confirmation before removing anything
-
-**How to use it:**
-- Open the shopping client and you'll see the chat panel on the right
-- Type a message, or click **⊕** to attach a photo (fridge, receipt, snack bar before/after, etc.)
-- The list updates live as the assistant processes your request
-- Removals show a confirm prompt before anything is deleted
-
-The assistant maintains a continuous conversation — you can upload a receipt, then follow up with "actually make that 2 per week", and it remembers the context.
-
-**Note:** The same `OPENROUTER_API_KEY` from Step 1 is used. No additional setup needed.
-
----
-
-### Step 4 — Run the script manually (first test)
-
-```bash
-simulang run scripts/main.ts -- --force
-```
-
-Add `--verbose` to see every internal step (model responses, click coordinates, navigation):
-
+Add `--verbose` to see model responses, click coordinates, and navigation steps:
 ```bash
 simulang run scripts/main.ts -- --force --verbose
 ```
 
-The `--force` flag bypasses the Saturday and 7-day checks so you can test any day. The bot will:
-1. Clear your Redmart cart
-2. Search for each item on your list
-3. Add the right product and quantity to cart
-4. Open the cart in your browser
+**To schedule (every Saturday at 9am):**
 
-Review the cart, then pay normally on Redmart.
-
-#### Log levels
-
-By default the script only prints high-level progress — which items were added and which were skipped. This is all most users need.
-
-| Flag | What you see |
-|------|-------------|
-| *(none)* | Item results only — ✓ added, ⚠ skipped |
-| `--verbose` | Everything: model responses, click coordinates, page navigation |
-
-If you only care about what was skipped, just run without any flag and look for the yellow `⚠` lines.
-
----
-
-### Step 5 — Schedule it to run every Saturday at 9am
-
-This sets up a daily background job. Every morning at 9am it checks — if it's Saturday and at least 7 days have passed since the last shop, it runs automatically.
-
-**1. Find the full path to your project folder:**
+Find your paths first:
 ```bash
-cd redmart-shopper && pwd
-```
-Copy the output — it will look something like `/Users/yourname/Documents/redmart-shopper`.
-
-**2. Find the full path to simulang:**
-```bash
-which simulang
-```
-Copy that too — something like `/usr/local/bin/simulang`.
-
-**3. Open your crontab:**
-```bash
-crontab -e
-```
-This opens a text editor. Add this line at the bottom (replacing the paths with yours):
-
-```
-0 9 * * * cd /Users/yourname/Documents/redmart-shopper && /usr/local/bin/simulang run scripts/main.ts >> /tmp/redmart-shopper.log 2>&1
+cd redmart-shopper && pwd   # copy this
+which simulang              # copy this too
 ```
 
-Save and exit (in the default editor `vim`: press `Escape`, then type `:wq` and press Enter).
-
-**4. Grant your terminal full disk and accessibility access** in System Settings → Privacy & Security if the script can't read files or click buttons when running in the background.
-
-To check the log after a Saturday run:
-```bash
-cat /tmp/redmart-shopper.log
+Open your crontab (`crontab -e`) and add:
+```
+0 9 * * 6 cd /path/to/redmart-shopper && /path/to/simulang run scripts/main.ts >> /tmp/redmart-shopper.log 2>&1
 ```
 
-To force a run any time (skips the Saturday and schedule checks):
-```bash
-simulang run scripts/main.ts -- --force
-```
-
----
+The `6` means Saturday. The script also checks that at least 7 days have passed since the last run — so if you ran `--force` mid-week it won't double-shop. Use `--force` to bypass both checks.
 
 ## Workflow Diagram
 
@@ -245,10 +129,8 @@ simulang run scripts/main.ts -- --force
 | `shoppingList[].description` | Buying spec used by the AI to pick the right product |
 | `shoppingList[].qty` | Total quantity to buy |
 
-### cartStatus values
-
-| Value | Meaning |
-|-------|---------|
+| `cartStatus` | Meaning |
+|--------------|---------|
 | `pending` | No run this week yet |
 | `adding` | Bot is currently adding items |
 | `ready` | Cart is loaded — go pay |
@@ -257,6 +139,7 @@ simulang run scripts/main.ts -- --force
 ## Notes
 
 - **Why no auto-checkout?** Payment is irreversible. The bot always stops at a populated cart so you stay in control.
-- **The bot picks wrong products?** Make your description more specific — include brand, size, and any preferences.
-- **To stop a run mid-way:** Move your cursor to a corner of the screen or switch to another window.
+- **Bot picks wrong products?** Make the description more specific — include brand, exact size, and any distinguishing details.
+- **To stop a run mid-way:** Move your cursor to any corner of the screen — the script checks between actions and exits cleanly. You can also press `Ctrl+C` in the terminal.
 - **Redmart login:** The bot uses your existing browser session — make sure you're logged in before the Saturday run.
+- **Check the log after a Saturday run:** `cat /tmp/redmart-shopper.log`

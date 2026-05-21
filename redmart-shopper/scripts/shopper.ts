@@ -24,9 +24,23 @@ export interface ShoppingItem {
   qty: number
 }
 
+export class UserEscapeError extends Error {
+  constructor() { super('run cancelled — cursor moved to screen corner') }
+}
+
 // --- Utilities ---
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+const CORNER_PX = 50
+
+function checkEscape(): void {
+  const [mx, my] = new MouseController().location()
+  const [sx, sy, sw, sh] = Screen.mainScreen().dimensions()
+  const nearH = mx < sx + CORNER_PX || mx > sx + sw - CORNER_PX
+  const nearV = my < sy + CORNER_PX || my > sy + sh - CORNER_PX
+  if (nearH && nearV) throw new UserEscapeError()
+}
 
 function clickAt(x: number, y: number) {
   const mouse = new MouseController()
@@ -73,6 +87,7 @@ async function withRetry<T>(label: string, fn: () => T, retries = 2): Promise<T>
 }
 
 async function groundAndClick(groundModel: GroundingModel, concept: string) {
+  checkEscape()
   refocusBrowser()
   await sleep(300)
   const { screenshot } = takeScreenshot()
@@ -82,6 +97,7 @@ async function groundAndClick(groundModel: GroundingModel, concept: string) {
 }
 
 async function askScreen(askModel: AskModel, prompt: string): Promise<string> {
+  checkEscape()
   refocusBrowser()
   await sleep(300)
   const { image } = takeScreenshot()
