@@ -16,8 +16,14 @@ Simulang is a CLI tool for automating real desktop apps — your browser, editor
 
 | Recipe | Category | Description |
 |--------|----------|-------------|
+| [calendar-to-docs](calendar-to-docs/) | Productivity | Reads upcoming events from macOS Calendar via the accessibility tree and pastes a formatted month-grouped digest into a new Google Doc |
+| [daily-news-digest](daily-news-digest/) | Productivity | Scrapes top headlines from CNN, NY Times, BBC, The Guardian, and Hacker News and writes a dated digest into a new Apple Notes note — no API keys required |
+| [doomscroller](doomscroller/) | Social | Scrolls TikTok's For You feed and forwards videos that cross a like/share threshold to a friend on Slack |
 | [mac-2048-player](mac-2048-player/) | Games | Expectimax bot that plays 2048 (Mac App Store) using vision grounding for UI navigation and the accessibility tree for board state |
-| [doomscroller](doomscroller/) | Social | Scrolls TikTok's For You feed and shares videos that hit a like/share threshold to a friend on Slack |
+| [nudge](nudge/) | Productivity | Keeps your presence status active with imperceptible cursor micro-movements every 30 seconds — cursor always snaps back, no API keys required |
+| [simple-profiler](simple-profiler/) | Dev Tools | Compiles and runs a C++ sorting benchmark, then pastes a formatted profiling report into Apple Notes |
+| [slitherio](slitherio/) | Games | Plays slither.io automatically — steers with orbit patterns and uses pixel-level screenshot analysis to detect threats and snap into a defensive spin |
+| [wordle](wordle/) | Games | Plays Wordle Unlimited automatically — opens with "CRANE" then uses AskModel each turn to read the board and pick the next guess |
 
 Got something to share? We'd love to see it — check out [CONTRIBUTING.md](CONTRIBUTING.md).
 
