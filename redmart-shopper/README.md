@@ -1,5 +1,7 @@
 # Redmart Shopper
 
+## Description
+
 Weekly grocery automation for Redmart (Lazada SG). Manage your shopping list in a local web app, then let a Simulang script fill your Redmart cart every Saturday. Review and pay — the bot does the rest.
 
 ## Demo

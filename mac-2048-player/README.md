@@ -1,4 +1,6 @@
-# 2048 Player
+# mac-2048-player
+
+## Description
 
 An Expectimax bot that plays [2048 by Ketchapp](https://apps.apple.com/sg/app/2048/id840919914) from the Mac App Store. Uses vision grounding to navigate the UI and the accessibility tree to read the board state each move.
 

@@ -1,5 +1,7 @@
 # Doomscroller
 
+## Description
+
 Scrolls TikTok's For You feed and watches for videos that cross a like and share threshold. When one is found, it copies the link via TikTok's share sheet and sends it to a friend on Slack. Uses the accessibility tree to read counts and vision grounding to navigate the share sheet and Slack sidebar.
 
 ## Demo

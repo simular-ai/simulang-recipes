@@ -23,7 +23,7 @@ Opens Wordle Unlimited and plays automatically. Starts with the strong opener "C
 1. `cd wordle`
 2. `simulang run main.ts`
 
-## Workflow
+## Workflow Diagram
 
 ```
 [Open wordleunlimited.org]

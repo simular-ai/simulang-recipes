@@ -28,7 +28,7 @@ The benchmark compares three sorting implementations across four array sizes (1k
 
 Note: bubble sort on 50k elements (averaged 3 runs) will take a few minutes — this is intentional, the slowdown is the point.
 
-## Workflow
+## Workflow Diagram
 
 ```
 [Compile main.cpp with clang++ -O2]
