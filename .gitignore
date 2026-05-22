@@ -10,6 +10,9 @@ node_modules/
 # macOS
 .DS_Store
 
+# Compiled binaries
+profiler_bin
+
 # Script outputs
 output.txt
 output/
