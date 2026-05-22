@@ -4,6 +4,10 @@
 
 Opens your default browser, visits CNN, NY Times, BBC News, The Guardian, and Hacker News in sequence, and scrapes the top headlines from each using the OS accessibility tree. The results are formatted into a dated digest and written directly into a new Apple Notes note. No API keys required.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 - `App.defaultBrowser().open()` — opens a URL in the user's default browser and returns a live process handle

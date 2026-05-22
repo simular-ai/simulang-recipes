@@ -4,6 +4,10 @@
 
 Opens Wordle Unlimited and plays automatically. Starts with the strong opener "CRANE", then uses `AskModel` each turn to read the coloured tiles from a screenshot, reason about the constraints, and suggest the next valid guess. Pure keyboard input — no coordinates, no clicking on game elements.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 - `App.defaultBrowser().open()` — opens wordleunlimited.org

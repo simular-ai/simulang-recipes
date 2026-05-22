@@ -6,6 +6,10 @@ Compiles and runs a C++ sorting benchmark, then opens Apple Notes and pastes a f
 
 The benchmark compares three sorting implementations across four array sizes (1k, 5k, 10k, 50k elements), making the O(n²) vs O(n log n) complexity difference immediately visible in the numbers.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 - `File` (Node `node:child_process`) — compiles `main.cpp` via `clang++ -O2` and runs the binary, capturing stdout

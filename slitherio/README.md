@@ -4,6 +4,10 @@
 
 Opens slither.io, enters a nickname, and plays automatically using two concurrent threads. The main thread runs a 50ms movement loop that steers the snake through alternating wide and tight orbit patterns. A background worker thread continuously analyses screenshots using pixel-level connected-components detection to spot enemy snakes — no vision API calls, sub-200ms latency. On threat, the snake snaps into a tight defensive spin that is very difficult for human players to intercept. Hold **Shift** at any time to take manual control; release and the bot resumes after 3 seconds.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 **Main thread**

@@ -4,6 +4,10 @@
 
 Keeps your presence status active by making a small, imperceptible cursor movement every 30 seconds. The cursor always snaps back to exactly where you left it — so it never interrupts your work. Works with any app that reads mouse activity to determine idle status (Teams, Slack, Zoom, and others). No API keys required.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 - `MouseController.location()` — reads the current cursor position before moving
