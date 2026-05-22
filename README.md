@@ -6,7 +6,7 @@ A collection of community-built automations for [Simulang](https://docs.simular.
 
 Simulang is a CLI tool for automating real desktop apps — your browser, editor, native apps, and more. Scripts are TypeScript/JS files that interact with UIs through OS accessibility APIs, with optional AI-powered vision grounding for trickier elements. Check out the [primer](https://docs.simular.ai/simulang/simulang-primer) to get started.
 
-> **Requirements:** These recipes run on macOS · Node ≥ 22.18 · [simulang](https://docs.simular.ai/simulang/simulang-primer) installed · Screen Recording + Accessibility permissions granted to your terminal (run `simulang setup` once)
+> **Requirements:** Node ≥ 22.18 · [simulang](https://docs.simular.ai/simulang/simulang-primer) installed · Run `simulang setup` once to grant required OS permissions
 
 ## API Key Setup
 
@@ -51,4 +51,5 @@ Got something to share? We'd love to see it — check out [CONTRIBUTING.md](CONT
 
 - [Simulang Docs](https://docs.simular.ai/simulang/simulang-primer)
 - [`@simular-ai/simulang-js` on npm](https://www.npmjs.com/package/@simular-ai/simulang-js)
+- [`simulang-js` on GitHub](https://github.com/simular-ai/simulang-js)
 - [Simular Website](https://www.simular.ai/)

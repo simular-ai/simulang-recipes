@@ -22,6 +22,7 @@ The benchmark compares three sorting implementations across four array sizes (1k
 
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
+- macOS (uses Apple Notes and Xcode Command Line Tools)
 - No API key required
 - Xcode Command Line Tools (`xcode-select --install`) for `clang++`
 - `npm install` run once in this folder
