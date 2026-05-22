@@ -75,7 +75,7 @@ Anything worth knowing — limitations, gotchas, or ways to adapt this recipe.
 ## Before You Submit
 
 - [ ] Script runs end-to-end without errors (`simulang run main.ts`)
-- [ ] Demo GIF or video is included
+- [ ] Demo GIF or video included (strongly recommended — dramatically increases discoverability)
 - [ ] No hardcoded secrets — env vars documented in README if any are needed
 - [ ] README has all 6 sections
 - [ ] Folder name is kebab-case and describes the automation

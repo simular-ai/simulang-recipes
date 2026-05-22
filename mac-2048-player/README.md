@@ -27,7 +27,8 @@ An Expectimax bot that plays [2048 by Ketchapp](https://apps.apple.com/sg/app/20
 
 **Steps:**
 1. `cd mac-2048-player`
-2. `simulang run main.ts`
+2. `npm install`
+3. `simulang run main.ts`
 
 **To stop:** move your cursor outside the game board, or change to another window
 

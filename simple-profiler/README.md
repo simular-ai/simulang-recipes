@@ -50,3 +50,9 @@ Size      BubbleSort (ms)   MergeSort (ms)   std::sort (ms)
 ```
 
 The numbers make it viscerally clear why algorithm choice matters: bubble sort at 50k is thousands of times slower than `std::sort` on the same input.
+
+## Notes
+
+- **Bubble sort on 50k elements** takes a few minutes intentionally — the slowdown is the point.
+- **`profiler_bin` is not committed** — the script compiles it fresh on every run via `clang++`.
+- **Xcode Command Line Tools required** for `clang++`. Run `xcode-select --install` if the compile step fails.

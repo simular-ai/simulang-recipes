@@ -14,6 +14,7 @@ Keeps your presence status active by making a small, imperceptible cursor moveme
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
 - No API key required
+- Run `npm install` once in this folder
 
 **Run indefinitely** (stop with Ctrl+C):
 ```bash

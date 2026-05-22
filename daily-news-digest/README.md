@@ -23,7 +23,8 @@ Opens your default browser, visits CNN, NY Times, BBC News, The Guardian, and Ha
 
 **Steps:**
 1. `cd daily-news-digest`
-2. `simulang run main.ts`
+2. `npm install`
+3. `simulang run main.ts`
 
 The script opens each site for ~3.5 seconds to let the accessibility tree render, so it takes around 20 seconds end-to-end. When it finishes, open Apple Notes — the digest will be the newest note.
 
