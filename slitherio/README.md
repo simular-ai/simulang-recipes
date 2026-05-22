@@ -26,7 +26,7 @@ Opens slither.io, enters a nickname, and plays automatically using two concurren
 
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
-- `OPENROUTER_API_KEY` set in your environment (for the Play button grounding and game-over check)
+- `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - `npm install` run once in this folder
 - macOS (uses `osascript` for Shift key detection)
 

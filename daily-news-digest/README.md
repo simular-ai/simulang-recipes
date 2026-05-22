@@ -19,6 +19,7 @@ Opens your default browser, visits CNN, NY Times, BBC News, The Guardian, and Ha
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
 - macOS (uses Apple Notes and macOS accessibility APIs)
+- No API key required
 
 **Steps:**
 1. `cd daily-news-digest`

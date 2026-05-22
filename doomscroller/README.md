@@ -20,7 +20,7 @@ Scrolls TikTok's For You feed and watches for videos that cross a like and share
 **Prerequisites:**
 - simulang installed (`simulang run` available in your terminal)
 - Slack desktop app installed and logged in
-- Set your `OPENROUTER_API_KEY`
+- `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 
 **Steps:**
 1. `cd doomscroller`

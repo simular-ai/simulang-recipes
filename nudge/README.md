@@ -13,6 +13,7 @@ Keeps your presence status active by making a small, imperceptible cursor moveme
 
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
+- No API key required
 
 **Run indefinitely** (stop with Ctrl+C):
 ```bash

@@ -16,7 +16,7 @@ Opens Wordle Unlimited and plays automatically. Starts with the strong opener "C
 
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
-- `OPENROUTER_API_KEY` set in your environment
+- `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - `npm install` run once in this folder
 
 **Steps:**

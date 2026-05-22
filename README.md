@@ -6,6 +6,17 @@ A collection of community-built automations for [Simulang](https://docs.simular.
 
 Simulang is a CLI tool for automating real desktop apps — your browser, editor, native apps, and more. Scripts are TypeScript/JS files that interact with UIs through OS accessibility APIs, with optional AI-powered vision grounding for trickier elements. Check out the [primer](https://docs.simular.ai/simulang/simulang-primer) to get started.
 
+## API Key Setup
+
+Some recipes use vision grounding or `AskModel` and require an [OpenRouter](https://openrouter.ai) API key. Set it once and every recipe that needs it will pick it up automatically:
+
+```bash
+# Add to ~/.zshrc or ~/.zprofile, then open a new terminal
+export OPENROUTER_API_KEY=your_key_here
+```
+
+Each recipe's README states whether a key is required.
+
 ## Running a Recipe
 
 1. Get Simulang set up — the [primer](https://docs.simular.ai/simulang/simulang-primer) covers installation

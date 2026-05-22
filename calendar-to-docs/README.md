@@ -20,7 +20,7 @@ Opens macOS Calendar in week view, reads upcoming events for the next 3 months d
 - Simulang installed (`simulang run` available in your terminal)
 - macOS with at least one calendar visible in Calendar.app
 - Signed into your Google account in Safari
-- `OPENROUTER_API_KEY` set in your environment (for vision grounding)
+- `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - `npm install` run once in this folder
 
 **Steps:**
