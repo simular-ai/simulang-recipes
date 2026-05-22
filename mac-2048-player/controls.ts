@@ -1,4 +1,4 @@
-import { MouseController, Button, Coordinate, Direction } from '@simular-ai/simulib-js'
+import { MouseController, Button, Coordinate, Direction } from '@simular-ai/simulang-js'
 
 export type SwipeDirection = 'up' | 'down' | 'left' | 'right'
 

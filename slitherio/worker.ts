@@ -6,7 +6,6 @@ import { workerData, parentPort } from 'node:worker_threads'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Jimp } from 'jimp'
-// @ts-ignore
 import { screenshotCropped, screenshotFull, Screen, AskModel } from '@simular-ai/simulang-js'
 
 const { cropX, cropY, cropW, cropH } = workerData as {

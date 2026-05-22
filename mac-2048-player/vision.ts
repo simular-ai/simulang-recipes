@@ -5,7 +5,7 @@ import {
   AccessibilityTree,
   TraversalOrder,
   type Screenshot,
-} from '@simular-ai/simulib-js'
+} from '@simular-ai/simulang-js'
 import type { Board } from './strategy.ts'
 
 const model = GroundingModel.default()

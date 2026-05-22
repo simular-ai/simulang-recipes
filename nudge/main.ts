@@ -6,7 +6,7 @@
 // Run: simulang run main.ts
 // Run for a fixed duration: NUDGE_DURATION_MIN=60 simulang run main.ts
 
-import { MouseController, Coordinate } from '@simular-ai/simulib-js'
+import { MouseController, Coordinate } from '@simular-ai/simulang-js'
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 

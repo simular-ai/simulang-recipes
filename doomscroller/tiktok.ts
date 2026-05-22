@@ -1,4 +1,4 @@
-import { AccessibilityTree, TraversalOrder, Clipboard, GroundingModel, screenshotFull, Screen, type AccessibilityNodeJs } from '@simular-ai/simulib-js'
+import { AccessibilityTree, TraversalOrder, Clipboard, GroundingModel, screenshotFull, Screen, type AccessibilityNodeJs } from '@simular-ai/simulang-js'
 import { click, sleep } from './controls.ts'
 
 export interface Counts {

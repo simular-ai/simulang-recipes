@@ -16,7 +16,7 @@ import {
   Key,
   Direction,
   type Instance,
-} from '@simular-ai/simulib-js'
+} from '@simular-ai/simulang-js'
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 

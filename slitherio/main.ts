@@ -30,7 +30,7 @@ import {
   Screen,
   GroundingModel,
   initLogger,
-} from '@simular-ai/simulib-js'
+} from '@simular-ai/simulang-js'
 
 // Suppress [info] mouse/key/screenshot noise — only show warnings+
 initLogger(null, 'warn')

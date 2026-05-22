@@ -1,9 +1,10 @@
 {
   "type": "module",
-  "engines": { "node": ">= 22.18" },
+  "engines": {
+    "node": ">= 22.18"
+  },
   "dependencies": {
-    "@simular-ai/simulang-js": "^6.0.1",
-    "@simular-ai/simulib-js": "^5.4.4"
+    "@simular-ai/simulang-js": "^6.0.1"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
