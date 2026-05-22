@@ -1,0 +1,24 @@
+{
+  "lastPurchaseDate": null,
+  "cartStatus": "pending",
+  "shoppingList": [
+    {
+      "id": "oat-milk",
+      "name": "Oat Milk",
+      "description": "Oatside 1L oat milk",
+      "qty": 2
+    },
+    {
+      "id": "free-range-eggs",
+      "name": "Free Range Eggs",
+      "description": "Free range eggs, 10 pack",
+      "qty": 1
+    },
+    {
+      "id": "sourdough-bread",
+      "name": "Sourdough Bread",
+      "description": "Sourdough loaf, sliced preferred",
+      "qty": 1
+    }
+  ]
+}

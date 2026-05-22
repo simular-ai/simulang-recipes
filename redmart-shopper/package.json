@@ -1,0 +1,17 @@
+{
+  "type": "module",
+  "scripts": {
+    "client": "npm install --prefix shopping-client && npm run client --prefix shopping-client"
+  },
+  "engines": {
+    "node": ">= 22.18"
+  },
+  "dependencies": {
+    "@simular-ai/simulang-js": "^6.0.1",
+    "@simular-ai/simulib-js": "^5.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.8.0",
+    "typescript": "^6.0.3"
+  }
+}
