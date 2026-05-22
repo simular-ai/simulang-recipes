@@ -52,5 +52,4 @@ Got something to share? We'd love to see it — check out [CONTRIBUTING.md](CONT
 - [Simulang Docs](https://docs.simular.ai/simulang/simulang-primer)
 - [`@simular-ai/simulang-js` on npm](https://www.npmjs.com/package/@simular-ai/simulang-js)
 - [`simulang-js` on GitHub](https://github.com/simular-ai/simulang-js)
-- [`simulang-js` on GitHub](https://github.com/simular-ai/simulang-js)
 - [Simular Website](https://www.simular.ai/)
