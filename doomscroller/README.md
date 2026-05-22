@@ -4,7 +4,6 @@ Scrolls TikTok's For You feed and watches for videos that cross a like and share
 
 ## Demo
 
-<!-- A GIF or video showing the automation running -->
 ![Demo](demo.gif)
 
 ## Key APIs Used

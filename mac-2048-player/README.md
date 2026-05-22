@@ -4,7 +4,6 @@ An Expectimax bot that plays [2048 by Ketchapp](https://apps.apple.com/sg/app/20
 
 ## Demo
 
-<!-- A GIF or video showing the automation running -->
 ![Demo](demo.gif)
 
 ## Key APIs Used
