@@ -22,7 +22,7 @@ import {
   Coordinate,
   screenshotFull,
   Screen,
-} from '@simular-ai/simulib-js'
+} from '@simular-ai/simulang-js'
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const kb    = new KeyboardController()

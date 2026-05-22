@@ -1,4 +1,4 @@
-import { App, FocusPolicy, Visibility, GroundingModel } from '@simular-ai/simulib-js'
+import { App, FocusPolicy, Visibility, GroundingModel } from '@simular-ai/simulang-js'
 import { moveTo, scrollDown, screenCenter, sleep } from './controls.ts'
 import { getLikesAndShares, getVideoLink } from './tiktok.ts'
 import { sendDM } from './slack.ts'

@@ -1,4 +1,4 @@
-import { App, FocusPolicy, Visibility, AccessibilityTree, TraversalOrder, KeyboardController, Key, Direction, Screen } from '@simular-ai/simulib-js'
+import { App, FocusPolicy, Visibility, AccessibilityTree, TraversalOrder, KeyboardController, Key, Direction, Screen } from '@simular-ai/simulang-js'
 import { click, swipe, sleep, mousePosition } from './controls.ts'
 import { capture, findByVision, computeSlots, readBoard } from './vision.ts'
 import { bestMove, isGameOver, printBoard } from './strategy.ts'

@@ -6,6 +6,10 @@ Compiles and runs a C++ sorting benchmark, then opens Apple Notes and pastes a f
 
 The benchmark compares three sorting implementations across four array sizes (1k, 5k, 10k, 50k elements), making the O(n²) vs O(n log n) complexity difference immediately visible in the numbers.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 - `File` (Node `node:child_process`) — compiles `main.cpp` via `clang++ -O2` and runs the binary, capturing stdout
@@ -18,6 +22,7 @@ The benchmark compares three sorting implementations across four array sizes (1k
 
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
+- No API key required
 - Xcode Command Line Tools (`xcode-select --install`) for `clang++`
 - `npm install` run once in this folder
 
@@ -27,7 +32,7 @@ The benchmark compares three sorting implementations across four array sizes (1k
 
 Note: bubble sort on 50k elements (averaged 3 runs) will take a few minutes — this is intentional, the slowdown is the point.
 
-## Workflow
+## Workflow Diagram
 
 ```
 [Compile main.cpp with clang++ -O2]
@@ -49,3 +54,9 @@ Size      BubbleSort (ms)   MergeSort (ms)   std::sort (ms)
 ```
 
 The numbers make it viscerally clear why algorithm choice matters: bubble sort at 50k is thousands of times slower than `std::sort` on the same input.
+
+## Notes
+
+- **Bubble sort on 50k elements** takes a few minutes intentionally — the slowdown is the point.
+- **`profiler_bin` is not committed** — the script compiles it fresh on every run via `clang++`.
+- **Xcode Command Line Tools required** for `clang++`. Run `xcode-select --install` if the compile step fails.

@@ -4,6 +4,10 @@
 
 Opens your default browser, visits CNN, NY Times, BBC News, The Guardian, and Hacker News in sequence, and scrapes the top headlines from each using the OS accessibility tree. The results are formatted into a dated digest and written directly into a new Apple Notes note. No API keys required.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 - `App.defaultBrowser().open()` — opens a URL in the user's default browser and returns a live process handle
@@ -19,10 +23,12 @@ Opens your default browser, visits CNN, NY Times, BBC News, The Guardian, and Ha
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
 - macOS (uses Apple Notes and macOS accessibility APIs)
+- No API key required
 
 **Steps:**
 1. `cd daily-news-digest`
-2. `simulang run main.ts`
+2. `npm install`
+3. `simulang run main.ts`
 
 The script opens each site for ~3.5 seconds to let the accessibility tree render, so it takes around 20 seconds end-to-end. When it finishes, open Apple Notes — the digest will be the newest note.
 

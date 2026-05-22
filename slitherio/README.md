@@ -4,6 +4,10 @@
 
 Opens slither.io, enters a nickname, and plays automatically using two concurrent threads. The main thread runs a 50ms movement loop that steers the snake through alternating wide and tight orbit patterns. A background worker thread continuously analyses screenshots using pixel-level connected-components detection to spot enemy snakes — no vision API calls, sub-200ms latency. On threat, the snake snaps into a tight defensive spin that is very difficult for human players to intercept. Hold **Shift** at any time to take manual control; release and the bot resumes after 3 seconds.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 **Main thread**
@@ -26,7 +30,7 @@ Opens slither.io, enters a nickname, and plays automatically using two concurren
 
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
-- `OPENROUTER_API_KEY` set in your environment (for the Play button grounding and game-over check)
+- `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - `npm install` run once in this folder
 - macOS (uses `osascript` for Shift key detection)
 

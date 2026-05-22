@@ -5,10 +5,12 @@ node_modules/
 .env
 *.env
 .env.*
-!.env.example
 
 # macOS
 .DS_Store
+
+# Compiled binaries
+profiler_bin
 
 # Script outputs
 output.txt
@@ -18,6 +20,9 @@ output/
 .vscode/
 .idea/
 *.swp
+
+# Claude Code
+.claude/
 
 # node_modules
 node_modules/

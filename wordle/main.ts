@@ -10,10 +10,8 @@ import {
   App, FocusPolicy, Visibility,
   KeyboardController, Key, Direction,
   screenshotFull, Screen, initLogger,
-} from '@simular-ai/simulib-js'
-// @ts-ignore
-import pkg from '@simular-ai/simulang-js'
-const { AskModel } = pkg as any
+  AskModel,
+} from '@simular-ai/simulang-js'
 
 initLogger(null, 'warn')
 
@@ -41,7 +39,7 @@ async function typeWord(word: string) {
 
 // ─── Open game ────────────────────────────────────────────────────────────────
 
-import { MouseController, Button, Coordinate } from '@simular-ai/simulib-js'
+import { MouseController, Button, Coordinate } from '@simular-ai/simulang-js'
 const mouse = new MouseController()
 
 console.log('📝  Opening Wordle Unlimited…')

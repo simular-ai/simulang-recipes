@@ -4,6 +4,10 @@
 
 Opens Wordle Unlimited and plays automatically. Starts with the strong opener "CRANE", then uses `AskModel` each turn to read the coloured tiles from a screenshot, reason about the constraints, and suggest the next valid guess. Pure keyboard input — no coordinates, no clicking on game elements.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Key APIs Used
 
 - `App.defaultBrowser().open()` — opens wordleunlimited.org
@@ -16,14 +20,14 @@ Opens Wordle Unlimited and plays automatically. Starts with the strong opener "C
 
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
-- `OPENROUTER_API_KEY` set in your environment
+- `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - `npm install` run once in this folder
 
 **Steps:**
 1. `cd wordle`
 2. `simulang run main.ts`
 
-## Workflow
+## Workflow Diagram
 
 ```
 [Open wordleunlimited.org]

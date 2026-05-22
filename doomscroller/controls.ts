@@ -1,4 +1,4 @@
-import { MouseController, KeyboardController, Button, Coordinate, Direction, Key, Screen } from '@simular-ai/simulib-js'
+import { MouseController, KeyboardController, Button, Coordinate, Direction, Key, Screen } from '@simular-ai/simulang-js'
 
 const mouse = new MouseController()
 const kb    = new KeyboardController()

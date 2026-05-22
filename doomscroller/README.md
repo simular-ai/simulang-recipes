@@ -1,10 +1,11 @@
 # Doomscroller
 
+## Description
+
 Scrolls TikTok's For You feed and watches for videos that cross a like and share threshold. When one is found, it copies the link via TikTok's share sheet and sends it to a friend on Slack. Uses the accessibility tree to read counts and vision grounding to navigate the share sheet and Slack sidebar.
 
 ## Demo
 
-<!-- A GIF or video showing the automation running -->
 ![Demo](demo.gif)
 
 ## Key APIs Used
@@ -20,7 +21,7 @@ Scrolls TikTok's For You feed and watches for videos that cross a like and share
 **Prerequisites:**
 - simulang installed (`simulang run` available in your terminal)
 - Slack desktop app installed and logged in
-- Set your `OPENROUTER_API_KEY`
+- `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 
 **Steps:**
 1. `cd doomscroller`

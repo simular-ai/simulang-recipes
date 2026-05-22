@@ -1,10 +1,11 @@
-# 2048 Player
+# mac-2048-player
+
+## Description
 
 An Expectimax bot that plays [2048 by Ketchapp](https://apps.apple.com/sg/app/2048/id840919914) from the Mac App Store. Uses vision grounding to navigate the UI and the accessibility tree to read the board state each move.
 
 ## Demo
 
-<!-- A GIF or video showing the automation running -->
 ![Demo](demo.gif)
 
 ## Key APIs Used
@@ -21,12 +22,13 @@ An Expectimax bot that plays [2048 by Ketchapp](https://apps.apple.com/sg/app/20
 **Prerequisites:**
 - simulang installed (`simulang run` available in your terminal)
 - 2048 by Ketchapp (Designed for iPad) installed from the Mac App Store
-- set your `OPENROUTER_API_KEY`
+- `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - macOS screen recording permission granted to your terminal
 
 **Steps:**
 1. `cd mac-2048-player`
-2. `simulang run main.ts`
+2. `npm install`
+3. `simulang run main.ts`
 
 **To stop:** move your cursor outside the game board, or change to another window
 

@@ -1,4 +1,4 @@
-import { App, FocusPolicy, Visibility, AccessibilityTree, AriaRole, TraversalOrder, GroundingModel, screenshotFull, Screen } from '@simular-ai/simulib-js'
+import { App, FocusPolicy, Visibility, AccessibilityTree, AriaRole, TraversalOrder, GroundingModel, screenshotFull, Screen } from '@simular-ai/simulang-js'
 import { click, typeText, pressEnter, sleep } from './controls.ts'
 
 export async function sendDM(message: string, friend: string, model: GroundingModel): Promise<void> {

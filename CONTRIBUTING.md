@@ -26,11 +26,10 @@ Use kebab-case, and name it after what the recipe **does** rather than how it wo
 your-recipe-name/
 ├── main.ts          # Your Simulang script (required)
 ├── README.md        # Docs following the template below (required)
-├── .env.example     # Only if your script needs API keys or config
 └── ...              # Any other files your recipe needs
 ```
 
-If your script uses vision grounding, add `OPENROUTER_API_KEY` to `.env.example`.
+If your script uses vision grounding or `AskModel`, it needs `OPENROUTER_API_KEY`. Document this in your README's **How to Run** section — users set it once in their shell profile (`export OPENROUTER_API_KEY=...` in `~/.zshrc`), not per-recipe.
 
 ## README Template
 
@@ -56,7 +55,7 @@ and which Simulang APIs it uses.
 ## How to Run
 **Prerequisites:**
 - Simulang installed (`simulang run` available in your terminal)
-- (If applicable) Copy `.env.example` to `.env` and fill in your values
+- `OPENROUTER_API_KEY` required — [see setup instructions](README.md#api-key-setup) *(or "No API key required" if none needed)*
 
 **Steps:**
 1. `cd your-recipe-name`
@@ -76,7 +75,7 @@ Anything worth knowing — limitations, gotchas, or ways to adapt this recipe.
 ## Before You Submit
 
 - [ ] Script runs end-to-end without errors (`simulang run main.ts`)
-- [ ] Demo GIF or video is included
-- [ ] No hardcoded secrets — `.env.example` included if any are needed
+- [ ] Demo GIF or video included (strongly recommended — dramatically increases discoverability)
+- [ ] No hardcoded secrets — env vars documented in README if any are needed
 - [ ] README has all 6 sections
 - [ ] Folder name is kebab-case and describes the automation

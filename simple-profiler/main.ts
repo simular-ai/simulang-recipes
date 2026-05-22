@@ -12,7 +12,7 @@ import {
   KeyboardController, Key, Direction,
   Clipboard,
   initLogger,
-} from '@simular-ai/simulib-js'
+} from '@simular-ai/simulang-js'
 
 initLogger(null, 'warn')
 
