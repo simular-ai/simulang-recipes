@@ -18,7 +18,6 @@ export function getLikesAndShares(): Counts {
     likes:  parseCount(likeNode?.name  ?? ''),
     shares: parseCount(shareNode?.name ?? ''),
   }
-  
 }
 
 export async function getVideoLink(model: GroundingModel): Promise<string | null> {

@@ -1,4 +1,4 @@
-# mac-2048-player
+# Mac 2048 Player
 
 ## Description
 

@@ -26,6 +26,8 @@ Use kebab-case, and name it after what the recipe **does** rather than how it wo
 your-recipe-name/
 ├── main.ts          # Your Simulang script (required)
 ├── README.md        # Docs following the template below (required)
+├── package.json     # Dependencies (required if you use any npm packages)
+├── package-lock.json  # Committed deliberately for reproducibility
 └── ...              # Any other files your recipe needs
 ```
 
