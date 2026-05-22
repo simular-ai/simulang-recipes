@@ -12,7 +12,7 @@ The benchmark compares three sorting implementations across four array sizes (1k
 
 ## Key APIs Used
 
-- `File` (Node `node:child_process`) — compiles `main.cpp` via `clang++ -O2` and runs the binary, capturing stdout
+- `execSync` (Node `node:child_process`) — compiles `main.cpp` via `clang++ -O2` and runs the binary, capturing stdout
 - `App.exactName('Notes').open()` — launches Apple Notes
 - `Instance.focus()` — ensures Notes has keyboard focus before pasting
 - `KeyboardController` + `Key.Meta` + `Key.N` — creates a new note (Cmd+N)

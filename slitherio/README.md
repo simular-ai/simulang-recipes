@@ -14,7 +14,7 @@ Opens slither.io, enters a nickname, and plays automatically using two concurren
 - `App.defaultBrowser().open()` — opens slither.io
 - `AccessibilityTree` + `setValue()` — fills the nickname field via the AX tree
 - `GroundingModel.default()` — used twice at startup: to click the Play button and to locate the snake's eyes for precise canvas calibration
-- `initLogger(null, 'warn')` — silences verbose simulib mouse/screenshot logs
+- `initLogger(null, 'warn')` — silences verbose simulang mouse/screenshot logs
 - `MouseController.moveMouse()` — steers the snake by orbiting the cursor around the canvas centre
 - `KeyboardController` + `Key.VolumeMute` — spams the mute key as a visible panic indicator
 - `Worker` (Node worker threads) — runs the pixel detection loop in parallel without blocking movement

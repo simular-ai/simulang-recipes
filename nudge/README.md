@@ -33,7 +33,7 @@ NUDGE_DURATION_MIN=60 simulang run main.ts
 ## Workflow Diagram
 
 ```
-[Read cursor position] → [Move +5px right] → [Wait 300ms]
+[Read cursor position] → [Move +30px right] → [Wait 300ms]
 → [Restore original position] → [Wait 30s] → [Repeat]
 ```
 

@@ -1,4 +1,4 @@
-# Contributing to SimuLang Recipes
+# Contributing to Simulang Recipes
 
 We'd love to have your recipe here! Here's everything you need to know to get it in.
 
@@ -28,6 +28,7 @@ your-recipe-name/
 ├── README.md        # Docs following the template below (required)
 ├── package.json     # Dependencies (required if you use any npm packages)
 ├── package-lock.json  # Committed deliberately for reproducibility
+├── tsconfig.json    # TypeScript config (required)
 └── ...              # Any other files your recipe needs
 ```
 
@@ -61,7 +62,8 @@ and which Simulang APIs it uses.
 
 **Steps:**
 1. `cd your-recipe-name`
-2. `simulang run main.ts`
+2. `npm install`
+3. `simulang run main.ts`
 
 Tip: `simulang run -i` opens an interactive REPL — great for exploring the accessibility tree before writing the full script.
 

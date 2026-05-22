@@ -10,8 +10,14 @@ const [centerX, centerY] = screenCenter()
 
 process.on('SIGINT', () => { console.log('\nInterrupted.'); process.exit(0) })
 
+if (SLACK_FRIEND === 'Change To Your Slack Friend\'s Name') {
+  console.error('❌  Set SLACK_FRIEND in config.ts before running.')
+  process.exit(1)
+}
+
 const browser = App.defaultBrowser()
-browser.open('https://www.tiktok.com', FocusPolicy.Steal, Visibility.Show, true)
+const instance = browser.open('https://www.tiktok.com', FocusPolicy.Steal, Visibility.Show, true)
+instance.enableAccessibility()
 await sleep(3000)
 moveTo(centerX, centerY)
 
@@ -40,6 +46,7 @@ while (watched < VIDEOS_TO_SCROLL) {
     }
 
     browser.open('https://www.tiktok.com', FocusPolicy.Steal, Visibility.Show, true)
+    instance.enableAccessibility()
     await sleep(3000)
     moveTo(centerX, centerY)
   }

@@ -13,7 +13,8 @@ const { cropX, cropY, cropW, cropH } = workerData as {
 }
 
 const __dirname  = dirname(fileURLToPath(import.meta.url))
-const DEBUG_PATH = join(__dirname, '..', '..', 'simulang-experiments', 'debug_binary.png')
+const DEBUG      = process.env.SLITHER_DEBUG === '1'
+const DEBUG_PATH = join(__dirname, 'debug_binary.png')
 
 // ─── Tuning ───────────────────────────────────────────────────────────────────
 const BRIGHTNESS_THRESH  = 80   // pixels brighter than this = foreground (0-255)
@@ -99,8 +100,8 @@ while (true) {
   console.log(`[worker ${ts()}] components=${numComponents} (${Date.now() - t0}ms) → threat=${threat}`)
   parentPort!.postMessage({ threat, gameOver: false })
 
-  // Save debug image periodically
-  if (iteration % DEBUG_EVERY === 0) {
+  // Save debug image periodically (set SLITHER_DEBUG=1 to enable)
+  if (DEBUG && iteration % DEBUG_EVERY === 0) {
     const debug = new Jimp({ width: w, height: h, color: 0x000000ff })
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {

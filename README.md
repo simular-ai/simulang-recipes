@@ -1,4 +1,4 @@
-# SimuLang Recipes
+# Simulang Recipes
 
 A collection of community-built automations for [Simulang](https://docs.simular.ai/simulang/simulang-primer). Browse what others have built, grab something useful, or share your own.
 

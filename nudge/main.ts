@@ -10,7 +10,7 @@ import { MouseController, Coordinate } from '@simular-ai/simulang-js'
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
-const INTERVAL_MS   = 3_000  // how often to nudge (ms)
+const INTERVAL_MS   = 30_000  // how often to nudge (ms)
 const NUDGE_PX      = 30       // pixels to move and return
 const DURATION_MIN  = process.env.NUDGE_DURATION_MIN
   ? parseInt(process.env.NUDGE_DURATION_MIN, 10)

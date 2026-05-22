@@ -19,7 +19,7 @@ Weekly grocery automation for Redmart (Lazada SG). Manage your shopping list in 
 ## How to Run
 
 **Prerequisites:**
-- simulang installed and logged in (`simulang --version` to check)
+- simulang installed (`simulang --version` to check)
 - `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - macOS with **Screen Recording** and **Automation** permissions granted to your terminal (System Settings → Privacy & Security)
 - Safari or Chrome — the script uses AppleScript to locate the browser window; other browsers are not supported

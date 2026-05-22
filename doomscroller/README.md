@@ -27,8 +27,7 @@ Scrolls TikTok's For You feed and watches for videos that cross a like and share
 1. `cd doomscroller`
 2. `npm install`
 3. Edit `config.ts` to set your thresholds and the Slack friend's name
-4. Open TikTok in your default browser and navigate to the For You feed
-5. `simulang run main.ts`
+4. `simulang run main.ts`
 
 ## Workflow Diagram
 
