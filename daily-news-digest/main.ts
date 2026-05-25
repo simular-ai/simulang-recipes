@@ -74,8 +74,11 @@ function openUrl(url: string): Instance {
   return instance
 }
 
-function scrapeHeadlines(max = 20): string[] {
-  const tree = AccessibilityTree.fromForeground()
+// Read the AX tree via the browser's PID rather than the foreground window.
+// This is robust against the browser losing focus mid-scrape (notifications,
+// other apps stealing focus) — we always read the right process.
+function scrapeHeadlines(instance: Instance, max = 20): string[] {
+  const tree = AccessibilityTree.fromPid(instance.pid)
 
   // Prefer semantic heading elements; fall back to links for sites like HN
   // that don't use <h> tags for stories.
@@ -105,9 +108,9 @@ const digest: { source: string; headlines: string[] }[] = []
 
 for (const { label, url } of SOURCES) {
   process.stdout.write(`  ${label}… `)
-  openUrl(url)
+  const instance = openUrl(url)
   await sleep(3500)
-  const headlines = scrapeHeadlines(20)
+  const headlines = scrapeHeadlines(instance, 20)
   digest.push({ source: label, headlines })
   console.log(`${headlines.length} headlines`)
 }

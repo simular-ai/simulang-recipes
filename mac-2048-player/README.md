@@ -11,10 +11,11 @@ An Expectimax bot that plays [2048 by Ketchapp](https://apps.apple.com/sg/app/20
 ## Key APIs Used
 
 - `App.exactName().open()` — launches and focuses the 2048 app
+- `instance.windows()[0]` + `window.screen()` — gets the actual window and the display it lives on (correct on multi-monitor setups)
+- `window.boundingBox()` vs `screen.boundingBox()` — detects whether the window is already fullscreen on its own display
 - `screenshot.ground(model, concept)` — locates the menu button, new game button, and board center by visual description
-- `AccessibilityTree.fromForeground()` — reads tile values and positions every move
+- `AccessibilityTree.fromPid(instance.pid)` — reads tile values and positions every move, without requiring the game to be frontmost
 - `MouseController` — clicks UI elements; simulates swipes via press → drag → release
-- `Screen.mainScreen().dimensions()` — detects whether the window is already fullscreen
 - `KeyboardController` — sends `Ctrl+Cmd+F` to enter fullscreen if needed
 
 ## How to Run

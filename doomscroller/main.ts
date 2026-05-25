@@ -6,7 +6,6 @@ import { VIDEOS_TO_SCROLL, MIN_LIKES, MIN_SHARES, SLACK_FRIEND, SCROLL_PAUSE_MS 
 import { fmt } from './utils.ts'
 
 const model = GroundingModel.default()
-const [centerX, centerY] = screenCenter()
 
 process.on('SIGINT', () => {
   console.log('\nInterrupted.')
@@ -19,9 +18,17 @@ if (SLACK_FRIEND === "Change To Your Slack Friend's Name") {
 }
 
 const browser = App.defaultBrowser()
-const instance = browser.open('https://www.tiktok.com', FocusPolicy.Steal, Visibility.Show, true)
+let instance = browser.open('https://www.tiktok.com', FocusPolicy.Steal, Visibility.Show, true)
 instance.enableAccessibility()
 await sleep(3000)
+
+function tiktokCenter(): [number, number] {
+  const screen = instance.windows()[0]?.screen()
+  if (!screen) throw new Error('TikTok browser window not found')
+  return screenCenter(screen)
+}
+
+let [centerX, centerY] = tiktokCenter()
 moveTo(centerX, centerY)
 
 console.log(
@@ -34,14 +41,14 @@ let shared = 0
 while (watched < VIDEOS_TO_SCROLL) {
   await sleep(SCROLL_PAUSE_MS)
 
-  const { likes, shares } = getLikesAndShares()
+  const { likes, shares } = getLikesAndShares(instance)
 
   console.log(`Video ${watched + 1}: likes=${fmt(likes)} shares=${fmt(shares)}`)
 
   if (likes >= MIN_LIKES && shares >= MIN_SHARES) {
     console.log(`  ✓ Meets threshold — sharing to ${SLACK_FRIEND}`)
 
-    const link = await getVideoLink(model)
+    const link = await getVideoLink(instance, model)
     if (!link) {
       console.log('  Could not get link — skipping')
     } else {
@@ -50,9 +57,10 @@ while (watched < VIDEOS_TO_SCROLL) {
       shared++
     }
 
-    browser.open('https://www.tiktok.com', FocusPolicy.Steal, Visibility.Show, true)
+    instance = browser.open('https://www.tiktok.com', FocusPolicy.Steal, Visibility.Show, true)
     instance.enableAccessibility()
     await sleep(3000)
+    ;[centerX, centerY] = tiktokCenter()
     moveTo(centerX, centerY)
   }
 

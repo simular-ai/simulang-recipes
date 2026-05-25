@@ -5,15 +5,15 @@ import {
   AskModel,
   GroundingModel,
   Image,
+  Instance,
   KeyboardController,
   Key,
   Direction,
   MouseController,
   Button,
-  screenshotFull,
   Screen,
+  screenshotFull,
 } from '@simular-ai/simulang-js'
-import { execSync } from 'child_process'
 import { config } from './config.ts'
 import { log } from './logger.ts'
 
@@ -36,11 +36,13 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const CORNER_PX = 50
 
+// Compare the cursor to the bounding box of whichever screen the user's mouse
+// is on — corners of any monitor count as an escape, not just the primary.
 function checkEscape(): void {
   const [mx, my] = new MouseController().location()
-  const [sx, sy, sw, sh] = Screen.mainScreen().dimensions()
-  const nearH = mx < sx + CORNER_PX || mx > sx + sw - CORNER_PX
-  const nearV = my < sy + CORNER_PX || my > sy + sh - CORNER_PX
+  const { left, top, right, bottom } = Screen.fromCurrentMouseLocation().boundingBox()
+  const nearH = mx < left + CORNER_PX || mx > right - CORNER_PX
+  const nearV = my < top + CORNER_PX || my > bottom - CORNER_PX
   if (nearH && nearV) throw new UserEscapeError()
 }
 
@@ -50,22 +52,18 @@ function clickAt(x: number, y: number) {
   mouse.button(Button.Left, Direction.Click)
 }
 
+// Browser instance handle — refreshed by `refocusBrowser` so we always have
+// a current PID/window pair to query `screen()` from.
+let browserInstance: Instance | null = null
+
+// Capture the screen the browser is actually on. `Window.screen()` matches
+// the OS's "owning" display, so this is correct on multi-monitor setups —
+// no AppleScript / cursor-warp dance needed.
 function getBrowserScreen(): Screen {
-  for (const browser of ['Safari', 'Google Chrome']) {
-    try {
-      const result = execSync(`osascript -e 'tell application "${browser}" to get bounds of front window'`, {
-        stdio: 'pipe',
-      })
-        .toString()
-        .trim()
-      const [left, top, right, bottom] = result.split(',').map((s) => parseInt(s.trim()))
-      if ([left, top, right, bottom].every((n) => !isNaN(n))) {
-        const mouse = new MouseController()
-        mouse.moveMouse(Math.round((left + right) / 2), Math.round((top + bottom) / 2), 0)
-        return Screen.fromCurrentMouseLocation()
-      }
-    } catch {}
-  }
+  try {
+    const [window] = (browserInstance ?? refocusBrowser()).windows()
+    if (window) return window.screen()
+  } catch {}
   log.warn('⚠ could not detect browser screen position — falling back to main screen')
   return Screen.mainScreen()
 }
@@ -109,8 +107,9 @@ async function askScreen(askModel: AskModel, prompt: string): Promise<string> {
   return answer
 }
 
-function refocusBrowser() {
-  App.defaultBrowser().open(null, FocusPolicy.Steal, Visibility.Show, true)
+function refocusBrowser(): Instance {
+  browserInstance = App.defaultBrowser().open(null, FocusPolicy.Steal, Visibility.Show, true)
+  return browserInstance
 }
 
 async function navigateTo(url: string) {

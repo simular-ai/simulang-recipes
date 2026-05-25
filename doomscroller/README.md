@@ -10,7 +10,8 @@ Scrolls TikTok's For You feed and watches for videos that cross a like and share
 
 ## Key APIs Used
 
-- `AccessibilityTree.fromForeground()` — reads live like and share counts from TikTok's page
+- `AccessibilityTree.fromPid(instance.pid)` — reads live like and share counts from TikTok's page (PID-based, so a focus change to Slack mid-loop doesn't break the read)
+- `instance.windows()[0].screen()` — captures the display the browser / Slack actually live on, so screenshots and the cursor-centre calculation work on multi-monitor setups
 - `screenshot.ground(model, concept)` — locates the copy link button in the share sheet and the friend's DM in Slack's sidebar
 - `Clipboard` — reads the video link after TikTok copies it to clipboard
 - `App.exactName()` / `App.defaultBrowser()` — switches focus between TikTok and Slack

@@ -5,7 +5,7 @@ import {
   Coordinate,
   Direction,
   Key,
-  Screen,
+  type Screen,
 } from '@simular-ai/simulang-js'
 
 const mouse = new MouseController()
@@ -32,9 +32,12 @@ export function pressEnter(): void {
   kb.key(Key.Return, Direction.Click)
 }
 
-export function screenCenter(): [number, number] {
-  const [sx, sy, sw, sh] = Screen.mainScreen().dimensions()
-  return [Math.round(sx + sw / 2), Math.round(sy + sh / 2)]
+// Centre of the given screen in global physical pixels. Pass the screen the
+// browser window is on (`browser.windows()[0].screen()`) so this works on
+// multi-monitor setups where the browser may not be on the primary display.
+export function screenCenter(screen: Screen): [number, number] {
+  const { left, top, right, bottom } = screen.boundingBox()
+  return [Math.round((left + right) / 2), Math.round((top + bottom) / 2)]
 }
 
 export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))

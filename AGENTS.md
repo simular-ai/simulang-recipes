@@ -12,7 +12,7 @@ self-contained folder with `main.ts`, `package.json`, `tsconfig.json`, and a
 ## Package
 
 Always import from `@simular-ai/simulang-js` — never `simulib-js` (old name,
-retired). Current version: `^6.0.1`.
+retired). Current version: `^7.0.1`.
 
 ```ts
 import {
@@ -79,8 +79,11 @@ exposes stable labels. Fall back to grounding only when elements have no
 accessible name.
 
 ```ts
-// Attach to the currently focused window (reliable for multi-process browsers)
-const tree = AccessibilityTree.fromForeground()
+// Attach by the app's PID — works even when the app is not frontmost. Prefer
+// this over `fromForeground()`: notifications or another app stealing focus
+// won't break the read, and you don't have to guess which window the OS
+// considers "foreground" mid-script.
+const tree = AccessibilityTree.fromPid(instance.pid)
 
 // Find by role
 const headings = tree.find(TraversalOrder.DepthFirst, AriaRole.Heading, null, false, 20, true)
@@ -94,31 +97,51 @@ if (btn?.refId !== undefined) tree.activate(btn.refId)
 if (input?.refId !== undefined) tree.setValue(input.refId, 'hello')
 ```
 
+`AccessibilityTree.fromForeground()` still works, but only reach for it
+when you genuinely don't have an Instance handle (e.g. interacting with
+whichever window the user happens to have selected).
+
 ## Vision grounding — for elements the AX tree doesn't expose
 
 ```ts
 const model = GroundingModel.default() // reads OPENROUTER_API_KEY automatically
 
+// Capture the screen the app is *actually on* — `Window.screen()` matches
+// the OS's owning-display heuristic, so this Just Works on multi-monitor
+// setups where the user moved the app to a secondary display.
+const appScreen = instance.windows()[0].screen()
+
 // Shrink + compress before sending — cuts latency and cost
-const shot = screenshotFull(true, Screen.mainScreen())
+const shot = screenshotFull(true, appScreen)
 shot.shrink(1920, 1080)
 shot.compress(70)
 
-const [x, y] = model.ground(shot, 'submit button')
+// `screenshot.ground()` returns **global physical pixels** ready to feed
+// straight into mouse APIs — it knows the original captured region and
+// remaps through any shrink / Retina scale factor for you. Don't do that
+// math by hand.
+const [x, y] = shot.ground(model, 'submit button')
 mouse.moveMouse(x, y, Coordinate.Abs)
 mouse.button(Button.Left, Direction.Click)
 ```
 
 Coordinates are **global physical pixels**, top-left origin. On a 2× Retina
 display, a logical 1920×1080 screen is 3840×2160 physical — always work in
-physical pixels.
+physical pixels. Coordinates can be negative on secondary monitors arranged
+above / to the left of the primary; never assume `x, y ≥ 0`.
+
+**Don't ask `AskModel` for click coordinates** — prefer `GroundingModel` /
+`screenshot.ground()`, which is purpose-built for it and emits global
+physical pixels. (If you must, `Screenshot.toGlobalPhysicalPixels(x, y,
+ScreenshotCoordinateType.absolute())` is the escape hatch for converting
+image-space pixels back to the display.)
 
 ## AskModel — for reasoning over screenshots
 
 ```ts
 const ask = AskModel.default() // reads OPENROUTER_API_KEY automatically
 
-const shot = screenshotFull(true, Screen.mainScreen())
+const shot = screenshotFull(true, appScreen)
 shot.shrink(1920, 1080)
 shot.compress(70)
 
@@ -183,7 +206,7 @@ Every recipe `package.json` must have:
   "type": "module",
   "engines": { "node": ">= 22.18" },
   "dependencies": {
-    "@simular-ai/simulang-js": "^6.0.1"
+    "@simular-ai/simulang-js": "^7.0.1"
   },
   "devDependencies": {
     "@types/node": "^25.x.x",
@@ -229,6 +252,32 @@ console.log('── Phase 1: Collecting data ───────────�
 process.stdout.write(`\r  processed ${n} items`)
 ```
 
+## Multi-monitor — windows, screens, and bounding boxes
+
+`Screen.dimensions()` is gone (7.0 breaking change). Use bounding boxes
+instead — they're the same shape as `Window.boundingBox()` and the AX
+tree's `BoundingBox`, so coordinates compose cleanly.
+
+```ts
+// Screen the app is on. Throws if the window has no overlap with
+// any display — wrap in try/catch and fall back to Screen.mainScreen().
+const screen = instance.windows()[0].screen()
+const { left, top, right, bottom } = screen.boundingBox()
+const width = right - left
+const height = bottom - top
+
+// All connected displays
+for (const s of Screen.all()) console.log(s.boundingBox())
+
+// The screen under the mouse — useful for the escape-hatch pattern below.
+const cursorScreen = Screen.fromCurrentMouseLocation()
+```
+
+For "is this window fullscreen on its display?" compare
+`window.boundingBox()` to `window.screen().boundingBox()` — never compare
+to `Screen.mainScreen()`, which gives the wrong answer on a non-primary
+monitor.
+
 ## Escape hatch pattern (long-running scripts)
 
 Give users a way to stop without Ctrl+C:
@@ -236,8 +285,8 @@ Give users a way to stop without Ctrl+C:
 ```ts
 function checkEscape() {
   const [mx, my] = new MouseController().location()
-  const [sx, sy, sw, sh] = Screen.mainScreen().dimensions()
-  if (mx < sx + 50 || mx > sx + sw - 50 || my < sy + 50 || my > sy + sh - 50) {
+  const { left, top, right, bottom } = Screen.fromCurrentMouseLocation().boundingBox()
+  if (mx < left + 50 || mx > right - 50 || my < top + 50 || my > bottom - 50) {
     console.log('\nCursor near screen edge — stopping.')
     process.exit(0)
   }
@@ -251,6 +300,9 @@ function checkEscape() {
 - Don't use `GroundingModel` when the AX tree exposes the element — it's free and faster
 - Don't wrap everything in `async function main()` — top-level `await` works
 - Don't commit `.env` files, compiled binaries, or build output
+- Don't reach for `Screen.mainScreen()` when you have an `Instance` — `instance.windows()[0].screen()` is correct on multi-monitor setups
+- Don't call `Screen.dimensions()` — removed in 7.0; use `Screen.boundingBox()`
+- Don't call `AccessibilityTree.fromForeground()` if you have an `Instance` — `AccessibilityTree.fromPid(instance.pid)` is robust to focus changes mid-script
 
 ## API reference
 

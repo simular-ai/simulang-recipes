@@ -1,10 +1,10 @@
 import {
   GroundingModel,
   screenshotFull,
-  Screen,
   AccessibilityTree,
   TraversalOrder,
   type Screenshot,
+  type Window,
 } from '@simular-ai/simulang-js'
 import type { Board } from './strategy.ts'
 
@@ -15,8 +15,10 @@ export type Located = { coords: [number, number]; via: 'tree' | 'vision' }
 
 export type GridSlots = { gridLeft: number; gridTop: number; cellSize: number }
 
-export function capture(): Screenshot {
-  return screenshotFull(false, Screen.mainScreen())
+// Capture the screen the game window is on — not the main screen. With
+// multi-monitor setups the user may have moved the game elsewhere.
+export function capture(window: Window): Screenshot {
+  return screenshotFull(false, window.screen())
 }
 
 export function findByVision(shot: Screenshot, concept: string): Located | null {
@@ -32,9 +34,12 @@ export function findByVision(shot: Screenshot, concept: string): Located | null 
 //   subtitle [78] "Join the…"   → right edge = grid right
 // The gap (subtitle.top − logo.bottom) repeats below the subtitle → grid top.
 // Board is square so cellSize = gridWidth / 4.
-export function computeSlots(): GridSlots | null {
+//
+// Tree is resolved through the instance's PID, so reads work even when the
+// game is no longer frontmost (cursor moved to a different window, etc.).
+export function computeSlots(pid: number): GridSlots | null {
   try {
-    const nodes = AccessibilityTree.fromForeground().find(TraversalOrder.BreadthFirst)
+    const nodes = AccessibilityTree.fromPid(pid).find(TraversalOrder.BreadthFirst)
 
     const logo = nodes.find((n) => n.value === '2048' && n.name === '' && n.boundingBox.bottom - n.boundingBox.top > 50)
     const subtitle = nodes.find((n) => (n.value ?? '').startsWith('Join the numbers'))
@@ -58,10 +63,10 @@ export function computeSlots(): GridSlots | null {
   }
 }
 
-export function readBoard(slots: GridSlots): Board | null {
+export function readBoard(pid: number, slots: GridSlots): Board | null {
   try {
     const { gridLeft, gridTop, cellSize } = slots
-    const nodes = AccessibilityTree.fromForeground().find(TraversalOrder.BreadthFirst)
+    const nodes = AccessibilityTree.fromPid(pid).find(TraversalOrder.BreadthFirst)
     const board: Board = Array.from({ length: 4 }, () => Array(4).fill(0))
     let placed = 0
 

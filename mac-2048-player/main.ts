@@ -1,14 +1,4 @@
-import {
-  App,
-  FocusPolicy,
-  Visibility,
-  AccessibilityTree,
-  TraversalOrder,
-  KeyboardController,
-  Key,
-  Direction,
-  Screen,
-} from '@simular-ai/simulang-js'
+import { App, FocusPolicy, Visibility, KeyboardController, Key, Direction } from '@simular-ai/simulang-js'
 import { click, swipe, sleep, mousePosition } from './controls.ts'
 import { capture, findByVision, computeSlots, readBoard } from './vision.ts'
 import { bestMove, isGameOver, printBoard } from './strategy.ts'
@@ -35,15 +25,24 @@ async function pollUntil<T>(fn: () => T | null, timeoutMs: number): Promise<T | 
 // --- Launch & fullscreen ---
 
 const instance = App.exactName(APP_NAME).open(null, FocusPolicy.Steal, Visibility.Show, true)
+instance.enableAccessibility()
 instance.focus()
 await sleep(300)
 
-const nodes = AccessibilityTree.fromForeground().find(TraversalOrder.BreadthFirst)
-const mainWindow = nodes.find((n) => n.name === APP_NAME && n.boundingBox.bottom - n.boundingBox.top > 100)
-const [, , screenPhysW, screenPhysH] = Screen.mainScreen().dimensions()
-const winW = mainWindow ? mainWindow.boundingBox.right - mainWindow.boundingBox.left : 0
-const winH = mainWindow ? mainWindow.boundingBox.bottom - mainWindow.boundingBox.top : 0
-const isFullscreen = [1, 2].some((scale) => winW * scale >= screenPhysW * 0.98 && winH * scale >= screenPhysH * 0.98)
+// Compare the 2048 window directly to the screen *it lives on* — not the main
+// screen. A user with two monitors may have the game on a secondary display,
+// and `Screen.mainScreen()` would give us the wrong reference.
+const [mainWindow] = instance.windows()
+if (!mainWindow) throw new Error('2048 window not found')
+
+const winBox = mainWindow.boundingBox()
+const screenBox = mainWindow.screen().boundingBox()
+const winW = winBox.right - winBox.left
+const winH = winBox.bottom - winBox.top
+const screenW = screenBox.right - screenBox.left
+const screenH = screenBox.bottom - screenBox.top
+const isFullscreen = winW >= screenW * 0.98 && winH >= screenH * 0.98
+
 if (!isFullscreen) {
   console.log('Not fullscreen — entering fullscreen...')
   const kb = new KeyboardController()
@@ -57,22 +56,22 @@ if (!isFullscreen) {
 
 // --- New game ---
 
-const menuResult = findByVision(capture(), 'menu button')
+const menuResult = findByVision(capture(mainWindow), 'menu button')
 if (!menuResult) throw new Error('Could not find the Menu button')
 click(...menuResult.coords)
 await sleep(100)
 
-const newGameResult = findByVision(capture(), 'new game button')
+const newGameResult = findByVision(capture(mainWindow), 'new game button')
 if (!newGameResult) throw new Error('Could not find the New Game button')
 click(...newGameResult.coords)
 await sleep(100)
 
-const rawSlots = await pollUntil(computeSlots, 1500)
+const rawSlots = await pollUntil(() => computeSlots(instance.pid), 1500)
 if (!rawSlots) throw new Error('Game board did not appear in time')
 const slots = rawSlots
 console.log()
 
-const boardResult = findByVision(capture(), 'the 2048 game board')
+const boardResult = findByVision(capture(mainWindow), 'the 2048 game board')
 if (!boardResult) throw new Error('Could not locate the game board center')
 const [boardX, boardY] = boardResult.coords
 console.log(`Board center: (${boardX}, ${boardY})\n`)
@@ -98,7 +97,7 @@ async function waitForMove(prev: Board | null): Promise<void> {
       running = false
       return
     }
-    const next = readBoard(slots)
+    const next = readBoard(instance.pid, slots)
     if (next && JSON.stringify(next) !== prevJson) return
   }
 }
@@ -112,7 +111,7 @@ while (running && moves < MAX_MOVES) {
     break
   }
 
-  const board = readBoard(slots)
+  const board = readBoard(instance.pid, slots)
   if (!board) {
     console.log('No tiles found — stopping.')
     break

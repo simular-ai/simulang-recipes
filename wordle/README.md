@@ -11,6 +11,8 @@ Opens Wordle Unlimited and plays automatically. Starts with the strong opener "C
 ## Key APIs Used
 
 - `App.defaultBrowser().open()` — opens wordleunlimited.org
+- `browser.windows()[0].screen()` — captures the screen the browser actually lives on (correct on multi-monitor setups)
+- `GroundingModel` + `screenshot.ground()` — locates the 5×6 tile grid in one shot and returns global physical pixel coordinates directly, no manual conversion needed
 - `AskModel.default().ask()` — reads the tile colours (green/yellow/gray) from a screenshot, explains its reasoning, and outputs the best next 5-letter word
 - `KeyboardController.text()` — types each letter with a small gap so the game registers each keypress
 - `KeyboardController.key(Key.Return)` — submits the guess
