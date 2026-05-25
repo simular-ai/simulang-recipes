@@ -10,3 +10,15 @@ updates:
       - 'dependencies'
     commit-message:
       prefix: 'chore'
+
+  # Root package.json holds repo-wide dev tooling only
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    cooldown:
+      default-days: 7
+    labels:
+      - 'dependencies'
+    commit-message:
+      prefix: 'chore'

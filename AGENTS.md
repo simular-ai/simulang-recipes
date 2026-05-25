@@ -192,7 +192,10 @@ Every recipe `package.json` must have:
 }
 ```
 
-No root-level `package.json` or workspace. Each recipe is independent.
+Each recipe is independent — there is **no npm workspace** linking them. The
+root `package.json` exists only to hold repo-wide dev tooling (Prettier,
+tracked by Dependabot) and exposes `npm run format` / `npm run format:check`.
+Never add recipe-shared runtime dependencies there.
 
 ## tsconfig.json shape
 
