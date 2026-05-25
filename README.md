@@ -1,5 +1,7 @@
 # Simulang Recipes
 
+[![typecheck](https://github.com/simular-ai/simulang-recipes/actions/workflows/typecheck.yml/badge.svg)](https://github.com/simular-ai/simulang-recipes/actions/workflows/typecheck.yml)
+
 A collection of community-built automations for [Simulang](https://docs.simular.ai/simulang/simulang-primer). Browse what others have built, grab something useful, or share your own.
 
 ## What is Simulang?

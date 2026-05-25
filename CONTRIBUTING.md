@@ -83,3 +83,4 @@ Anything worth knowing — limitations, gotchas, or ways to adapt this recipe.
 - [ ] No hardcoded secrets — env vars documented in README if any are needed
 - [ ] README has all 6 sections
 - [ ] Folder name is kebab-case and describes the automation
+- [ ] `npm ci && npx tsc --noEmit` passes inside the recipe folder (CI runs this on every PR)
