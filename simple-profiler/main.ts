@@ -8,8 +8,12 @@ import { execSync } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
-  App, FocusPolicy, Visibility,
-  KeyboardController, Key, Direction,
+  App,
+  FocusPolicy,
+  Visibility,
+  KeyboardController,
+  Key,
+  Direction,
   Clipboard,
   initLogger,
 } from '@simular-ai/simulang-js'
@@ -20,8 +24,8 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const kb = new KeyboardController()
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const CPP  = join(__dirname, 'main.cpp')
-const BIN  = join(__dirname, 'profiler_bin')
+const CPP = join(__dirname, 'main.cpp')
+const BIN = join(__dirname, 'profiler_bin')
 
 // ─── Compile ──────────────────────────────────────────────────────────────────
 
@@ -51,17 +55,22 @@ console.log(rawOutput)
 
 // ─── Parse results ────────────────────────────────────────────────────────────
 
-interface Row { size: number; bubble: number; merge: number; std: number }
+interface Row {
+  size: number
+  bubble: number
+  merge: number
+  std: number
+}
 const rows: Row[] = []
 
 for (const line of rawOutput.split('\n')) {
   const parts = line.trim().split(/\s+/)
   if (parts.length < 4 || isNaN(Number(parts[0]))) continue
   rows.push({
-    size:   parseInt(parts[0]),
+    size: parseInt(parts[0]),
     bubble: parseFloat(parts[1]),
-    merge:  parseFloat(parts[2]),
-    std:    parseFloat(parts[3]),
+    merge: parseFloat(parts[2]),
+    std: parseFloat(parts[3]),
   })
 }
 
@@ -82,15 +91,16 @@ for (const r of rows) {
 
 report += `\nKey observations:\n`
 if (rows.length >= 2) {
-  const small = rows[0], large = rows[rows.length - 1]
+  const small = rows[0],
+    large = rows[rows.length - 1]
   const mergeRatio = (large.merge / small.merge).toFixed(1)
-  const stdRatio   = (large.std   / small.std).toFixed(1)
-  const sizeRatio  = large.size / small.size
+  const stdRatio = (large.std / small.std).toFixed(1)
+  const sizeRatio = large.size / small.size
   report += `• Array size grew ${sizeRatio}× (${small.size} → ${large.size})\n`
   report += `• MergeSort time grew ${mergeRatio}× — consistent with O(n log n)\n`
   report += `• std::sort time grew ${stdRatio}× — also O(n log n), tighter constants\n`
   if (small.bubble !== null && rows[2]?.bubble !== null) {
-    const bubbleRow = rows.find(r => r.bubble !== null && r.size >= 10000)
+    const bubbleRow = rows.find((r) => r.bubble !== null && r.size >= 10000)
     if (bubbleRow?.bubble) {
       const bubbleRatio = (bubbleRow.bubble / (small.bubble ?? 1)).toFixed(0)
       report += `• BubbleSort grew ~${bubbleRatio}× for a ${bubbleRow.size / small.size}× size increase — demonstrating O(n²) scaling\n`

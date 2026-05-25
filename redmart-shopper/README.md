@@ -19,6 +19,7 @@ Weekly grocery automation for Redmart (Lazada SG). Manage your shopping list in 
 ## How to Run
 
 **Prerequisites:**
+
 - simulang installed (`simulang --version` to check)
 - `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - macOS with **Screen Recording** and **Automation** permissions granted to your terminal (System Settings → Privacy & Security)
@@ -27,6 +28,7 @@ Weekly grocery automation for Redmart (Lazada SG). Manage your shopping list in 
 - Node.js 22+
 
 **Steps:**
+
 1. `cd redmart-shopper`
 2. `npm install`
 3. `npm run client` — builds and starts the shopping list app at **http://localhost:4359**
@@ -35,15 +37,16 @@ Weekly grocery automation for Redmart (Lazada SG). Manage your shopping list in 
 
 Each item has three fields:
 
-| Field | What to enter |
-|-------|---------------|
-| **Name** | What you call it, e.g. `Oat Milk` |
-| **Description** | Specific details for the bot, e.g. `Oatside 1L oat milk` — the more specific, the better |
-| **Qty** | Weekly quantity. If the description says `1L` and qty is `3`, the bot will pick 3× 1L or 1× 3L, whichever makes more sense |
+| Field           | What to enter                                                                                                              |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Name**        | What you call it, e.g. `Oat Milk`                                                                                          |
+| **Description** | Specific details for the bot, e.g. `Oatside 1L oat milk` — the more specific, the better                                   |
+| **Qty**         | Weekly quantity. If the description says `1L` and qty is `3`, the bot will pick 3× 1L or 1× 3L, whichever makes more sense |
 
 **Chat assistant (optional):** the app has a built-in chat panel. Describe what you eat, upload receipt or fridge photos, and it will update your list automatically.
 
 Add `--verbose` to see model responses, click coordinates, and navigation steps:
+
 ```bash
 simulang run scripts/main.ts -- --force --verbose
 ```
@@ -51,12 +54,14 @@ simulang run scripts/main.ts -- --force --verbose
 **To schedule (every Saturday at 9am):**
 
 Find your paths first:
+
 ```bash
 cd redmart-shopper && pwd   # copy this
 which simulang              # copy this too
 ```
 
 Open your crontab (`crontab -e`) and add:
+
 ```
 0 9 * * 6 cd /path/to/redmart-shopper && /path/to/simulang run scripts/main.ts >> /tmp/redmart-shopper.log 2>&1
 ```
@@ -124,20 +129,20 @@ The `6` means Saturday. The script also checks that at least 7 days have passed 
 }
 ```
 
-| Field | Description |
-|-------|-------------|
-| `lastPurchaseDate` | Date of the last completed shop run (`YYYY-MM-DD`) |
-| `cartStatus` | `pending` / `adding` / `ready` / `error` — see below |
-| `shoppingList[].name` | Display name shown in the app |
+| Field                        | Description                                          |
+| ---------------------------- | ---------------------------------------------------- |
+| `lastPurchaseDate`           | Date of the last completed shop run (`YYYY-MM-DD`)   |
+| `cartStatus`                 | `pending` / `adding` / `ready` / `error` — see below |
+| `shoppingList[].name`        | Display name shown in the app                        |
 | `shoppingList[].description` | Buying spec used by the AI to pick the right product |
-| `shoppingList[].qty` | Total quantity to buy |
+| `shoppingList[].qty`         | Total quantity to buy                                |
 
-| `cartStatus` | Meaning |
-|--------------|---------|
-| `pending` | No run this week yet |
-| `adding` | Bot is currently adding items |
-| `ready` | Cart is loaded — go pay |
-| `error` | Script failed — check logs |
+| `cartStatus` | Meaning                       |
+| ------------ | ----------------------------- |
+| `pending`    | No run this week yet          |
+| `adding`     | Bot is currently adding items |
+| `ready`      | Cart is loaded — go pay       |
+| `error`      | Script failed — check logs    |
 
 ## Notes
 

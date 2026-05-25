@@ -4,7 +4,7 @@ import { loadSave, writeSave, isShopDue } from './save.ts'
 import { config } from './config.ts'
 import { initLogger, log } from './logger.ts'
 
-const force   = process.argv.includes('--force')
+const force = process.argv.includes('--force')
 const verbose = process.argv.includes('--verbose') || process.argv.includes('-v')
 initLogger(verbose)
 
@@ -22,7 +22,7 @@ if (!save.shoppingList?.length) {
 }
 
 log.info(`${save.shoppingList.length} item(s) on list:`)
-save.shoppingList.forEach(item => log.info(`  · ${item.name} ×${item.qty}`))
+save.shoppingList.forEach((item) => log.info(`  · ${item.name} ×${item.qty}`))
 log.rule()
 
 if (!isShopDue(save.lastPurchaseDate, force)) process.exit(0)

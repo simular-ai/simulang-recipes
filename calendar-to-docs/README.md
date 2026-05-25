@@ -21,6 +21,7 @@ Opens macOS Calendar in week view, reads upcoming events for the next 3 months d
 ## How to Run
 
 **Prerequisites:**
+
 - Simulang installed (`simulang run` available in your terminal)
 - macOS with at least one calendar visible in Calendar.app
 - Signed into your Google account in Safari
@@ -28,6 +29,7 @@ Opens macOS Calendar in week view, reads upcoming events for the next 3 months d
 - `npm install` run once in this folder
 
 **Steps:**
+
 1. `cd calendar-to-docs`
 2. `simulang run main.ts`
 
@@ -53,4 +55,4 @@ The script navigates 14 weeks of Calendar (≈ 3 months) at 600ms per week, taki
 - **All calendars included** — holidays, work events, and personal events are all captured. Events from every calendar visible in Calendar.app appear in the output.
 - **Past events filtered** — only events from today onward are included in the document.
 - **Google sign-in required** — `https://docs.new` creates a new document if you're signed in; otherwise Safari shows a login page instead.
-- **Why week view?** macOS Calendar's month view exposes event *existence* (coloured dots) but not event *names* in the accessibility tree. Week view renders events as labelled blocks whose titles are directly readable.
+- **Why week view?** macOS Calendar's month view exposes event _existence_ (coloured dots) but not event _names_ in the accessibility tree. Week view renders events as labelled blocks whose titles are directly readable.

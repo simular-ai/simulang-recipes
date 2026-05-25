@@ -6,7 +6,7 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const MODEL = process.env.CHAT_MODEL ?? 'anthropic/claude-sonnet-4-6'
 
 const TOOL = {
-  UPSERT:  'upsert_items',
+  UPSERT: 'upsert_items',
   REMOVAL: 'request_removal',
 } as const
 
@@ -29,10 +29,12 @@ interface OAIMessage {
 }
 
 interface OAIResponse {
-  choices: [{
-    message: { role: 'assistant'; content: string | null; tool_calls?: ToolCall[] }
-    finish_reason: string
-  }]
+  choices: [
+    {
+      message: { role: 'assistant'; content: string | null; tool_calls?: ToolCall[] }
+      finish_reason: string
+    },
+  ]
   error?: { message: string }
 }
 
@@ -50,7 +52,10 @@ const TOOLS = [
             items: {
               type: 'object',
               properties: {
-                id: { type: 'string', description: 'Existing item ID to update, or a URL-friendly slug for new items (e.g. "oat-milk")' },
+                id: {
+                  type: 'string',
+                  description: 'Existing item ID to update, or a URL-friendly slug for new items (e.g. "oat-milk")',
+                },
                 name: { type: 'string', description: 'Product name' },
                 description: { type: 'string', description: 'Brand, size, variant, flavour, etc.' },
                 qty: { type: 'integer', minimum: 1, description: 'Weekly quantity' },
@@ -99,11 +104,11 @@ function buildSystemMessage(): string {
   let listSection: string
   try {
     const save = getSave()
-    listSection = save.shoppingList.length > 0
-      ? '\n\nCurrent shopping list:\n' + save.shoppingList.map(i =>
-          `- ${i.id}: ${i.name} (${i.description}) ×${i.qty}`
-        ).join('\n')
-      : '\n\nCurrent shopping list: (empty)'
+    listSection =
+      save.shoppingList.length > 0
+        ? '\n\nCurrent shopping list:\n' +
+          save.shoppingList.map((i) => `- ${i.id}: ${i.name} (${i.description}) ×${i.qty}`).join('\n')
+        : '\n\nCurrent shopping list: (empty)'
   } catch {
     listSection = ''
   }
@@ -134,7 +139,7 @@ function applyUpsert(items: Array<{ id: string; name: string; description: strin
   for (const item of items) {
     const id = item.id?.trim() || slugify(item.name) || crypto.randomUUID()
     const qty = Math.max(1, Math.round(item.qty))
-    const idx = list.findIndex(i => i.id === id)
+    const idx = list.findIndex((i) => i.id === id)
     if (idx >= 0) {
       list[idx] = { id, name: item.name, description: item.description, qty }
     } else {
@@ -146,8 +151,11 @@ function applyUpsert(items: Array<{ id: string; name: string; description: strin
 }
 
 function getItemsByIds(ids: string[]): ShoppingItem[] {
-  try { return getSave().shoppingList.filter(i => ids.includes(i.id)) }
-  catch { return [] }
+  try {
+    return getSave().shoppingList.filter((i) => ids.includes(i.id))
+  } catch {
+    return []
+  }
 }
 
 function compressImagesInHistory(): void {
@@ -156,13 +164,13 @@ function compressImagesInHistory(): void {
     if (msg.role !== 'user' || !Array.isArray(msg.content)) continue
 
     const blocks = msg.content as ContentBlock[]
-    const imageCount = blocks.filter(b => b.type === 'image_url').length
+    const imageCount = blocks.filter((b) => b.type === 'image_url').length
     if (imageCount === 0) continue
 
     history[i] = {
       role: 'user',
       content: [
-        ...blocks.filter(b => b.type === 'text'),
+        ...blocks.filter((b) => b.type === 'text'),
         { type: 'text', text: `[User uploaded ${imageCount} image${imageCount > 1 ? 's' : ''} — already analyzed]` },
       ],
     }
@@ -177,7 +185,7 @@ async function callOpenRouter(systemMessage: string): Promise<OAIResponse> {
   const res = await fetch(OPENROUTER_URL, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${key}`,
+      Authorization: `Bearer ${key}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'http://localhost:4359',
       'X-Title': 'Redmart Shopping Assistant',
@@ -190,7 +198,7 @@ async function callOpenRouter(systemMessage: string): Promise<OAIResponse> {
     }),
   })
 
-  const data = await res.json() as OAIResponse
+  const data = (await res.json()) as OAIResponse
   if (!res.ok || data.error) throw new Error(data.error?.message ?? `OpenRouter error ${res.status}`)
   return data
 }
@@ -208,7 +216,7 @@ export interface ChatResult {
 
 export async function sendMessage(text: string, attachments: Attachment[]): Promise<ChatResult> {
   const content: ContentBlock[] = [
-    ...attachments.flatMap(a => [
+    ...attachments.flatMap((a) => [
       ...(a.name ? [{ type: 'text', text: `[File: ${a.name}]` }] : []),
       { type: 'image_url', image_url: { url: `data:${a.mediaType};base64,${a.base64}` } },
     ]),
@@ -238,7 +246,11 @@ export async function sendMessage(text: string, attachments: Attachment[]): Prom
       if (call.function.name === TOOL.UPSERT) {
         try {
           applyUpsert(args.items as Array<{ id: string; name: string; description: string; qty: number }>)
-          history.push({ role: 'tool', tool_call_id: call.id, content: `Applied: ${(args.items as unknown[]).length} item(s) updated.` })
+          history.push({
+            role: 'tool',
+            tool_call_id: call.id,
+            content: `Applied: ${(args.items as unknown[]).length} item(s) updated.`,
+          })
         } catch (e) {
           history.push({ role: 'tool', tool_call_id: call.id, content: `Error: ${(e as Error).message}` })
         }
@@ -258,7 +270,7 @@ export function confirmRemoval(): void {
   if (!pendingRemovalIds.length) return
   try {
     const save = getSave()
-    putSave({ ...save, shoppingList: save.shoppingList.filter(i => !pendingRemovalIds.includes(i.id)) })
+    putSave({ ...save, shoppingList: save.shoppingList.filter((i) => !pendingRemovalIds.includes(i.id)) })
   } catch {}
   history.push({ role: 'user', content: 'User confirmed the removal.' })
   pendingRemovalIds = []

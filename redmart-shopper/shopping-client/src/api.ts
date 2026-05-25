@@ -8,8 +8,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  getPointer: () =>
-    request<Pointer>('/pointer'),
+  getPointer: () => request<Pointer>('/pointer'),
 
   setPointer: (savePath: string) =>
     request<{ ok: true }>('/pointer', {
@@ -18,8 +17,7 @@ export const api = {
       body: JSON.stringify({ savePath }),
     }),
 
-  getSave: () =>
-    request<SaveFile>('/save'),
+  getSave: () => request<SaveFile>('/save'),
 
   putSave: (save: SaveFile) =>
     request<{ ok: true }>('/save', {
@@ -28,8 +26,7 @@ export const api = {
       body: JSON.stringify(save),
     }),
 
-  pickFile: () =>
-    request<{ path: string | null }>('/pick-file', { method: 'POST' }),
+  pickFile: () => request<{ path: string | null }>('/pick-file', { method: 'POST' }),
 
   chat: (text: string, attachments: Array<{ name: string; mediaType: string; base64: string }>) =>
     request<{ reply: string; pendingRemovals: ShoppingItem[] }>('/chat', {
@@ -38,12 +35,9 @@ export const api = {
       body: JSON.stringify({ text, attachments }),
     }),
 
-  chatConfirmRemoval: () =>
-    request<{ ok: true }>('/chat/confirm-removal', { method: 'POST' }),
+  chatConfirmRemoval: () => request<{ ok: true }>('/chat/confirm-removal', { method: 'POST' }),
 
-  chatDenyRemoval: () =>
-    request<{ ok: true }>('/chat/deny-removal', { method: 'POST' }),
+  chatDenyRemoval: () => request<{ ok: true }>('/chat/deny-removal', { method: 'POST' }),
 
-  chatReset: () =>
-    request<{ ok: true }>('/chat', { method: 'DELETE' }),
+  chatReset: () => request<{ ok: true }>('/chat', { method: 'DELETE' }),
 }

@@ -8,9 +8,12 @@ import { fmt } from './utils.ts'
 const model = GroundingModel.default()
 const [centerX, centerY] = screenCenter()
 
-process.on('SIGINT', () => { console.log('\nInterrupted.'); process.exit(0) })
+process.on('SIGINT', () => {
+  console.log('\nInterrupted.')
+  process.exit(0)
+})
 
-if (SLACK_FRIEND === 'Change To Your Slack Friend\'s Name') {
+if (SLACK_FRIEND === "Change To Your Slack Friend's Name") {
   console.error('❌  Set SLACK_FRIEND in config.ts before running.')
   process.exit(1)
 }
@@ -21,10 +24,12 @@ instance.enableAccessibility()
 await sleep(3000)
 moveTo(centerX, centerY)
 
-console.log(`Scrolling through ${VIDEOS_TO_SCROLL} videos, looking for likes > ${MIN_LIKES.toLocaleString()} and shares > ${MIN_SHARES.toLocaleString()}\n`)
+console.log(
+  `Scrolling through ${VIDEOS_TO_SCROLL} videos, looking for likes > ${MIN_LIKES.toLocaleString()} and shares > ${MIN_SHARES.toLocaleString()}\n`,
+)
 
 let watched = 0
-let shared  = 0
+let shared = 0
 
 while (watched < VIDEOS_TO_SCROLL) {
   await sleep(SCROLL_PAUSE_MS)

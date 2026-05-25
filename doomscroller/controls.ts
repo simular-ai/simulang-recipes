@@ -1,7 +1,15 @@
-import { MouseController, KeyboardController, Button, Coordinate, Direction, Key, Screen } from '@simular-ai/simulang-js'
+import {
+  MouseController,
+  KeyboardController,
+  Button,
+  Coordinate,
+  Direction,
+  Key,
+  Screen,
+} from '@simular-ai/simulang-js'
 
 const mouse = new MouseController()
-const kb    = new KeyboardController()
+const kb = new KeyboardController()
 
 export function click(x: number, y: number): void {
   mouse.moveMouse(x, y, Coordinate.Abs)
@@ -29,4 +37,4 @@ export function screenCenter(): [number, number] {
   return [Math.round(sx + sw / 2), Math.round(sy + sh / 2)]
 }
 
-export const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
+export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))

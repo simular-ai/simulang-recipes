@@ -25,12 +25,14 @@ export interface ShoppingItem {
 }
 
 export class UserEscapeError extends Error {
-  constructor() { super('run cancelled — cursor moved to screen corner') }
+  constructor() {
+    super('run cancelled — cursor moved to screen corner')
+  }
 }
 
 // --- Utilities ---
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const CORNER_PX = 50
 
@@ -51,12 +53,13 @@ function clickAt(x: number, y: number) {
 function getBrowserScreen(): Screen {
   for (const browser of ['Safari', 'Google Chrome']) {
     try {
-      const result = execSync(
-        `osascript -e 'tell application "${browser}" to get bounds of front window'`,
-        { stdio: 'pipe' }
-      ).toString().trim()
-      const [left, top, right, bottom] = result.split(',').map(s => parseInt(s.trim()))
-      if ([left, top, right, bottom].every(n => !isNaN(n))) {
+      const result = execSync(`osascript -e 'tell application "${browser}" to get bounds of front window'`, {
+        stdio: 'pipe',
+      })
+        .toString()
+        .trim()
+      const [left, top, right, bottom] = result.split(',').map((s) => parseInt(s.trim()))
+      if ([left, top, right, bottom].every((n) => !isNaN(n))) {
         const mouse = new MouseController()
         mouse.moveMouse(Math.round((left + right) / 2), Math.round((top + bottom) / 2), 0)
         return Screen.fromCurrentMouseLocation()
@@ -137,12 +140,12 @@ export async function clearCart(groundModel: GroundingModel, askModel: AskModel)
   const cartState = await askScreen(
     askModel,
     'Look at this Redmart shopping cart page carefully. ' +
-    'Find the SELECT ALL checkbox near the top left of the item list. ' +
-    'Answer exactly one word — nothing else: ' +
-    '"empty" if there are no items in the cart at all, ' +
-    '"selected" if the SELECT ALL checkbox is filled/ticked with an orange checkmark, ' +
-    '"unselected" if the SELECT ALL checkbox is empty, hollow, grey, or unchecked in any way. ' +
-    'When in doubt, answer "empty".',
+      'Find the SELECT ALL checkbox near the top left of the item list. ' +
+      'Answer exactly one word — nothing else: ' +
+      '"empty" if there are no items in the cart at all, ' +
+      '"selected" if the SELECT ALL checkbox is filled/ticked with an orange checkmark, ' +
+      '"unselected" if the SELECT ALL checkbox is empty, hollow, grey, or unchecked in any way. ' +
+      'When in doubt, answer "empty".',
   )
 
   if (cartState.toLowerCase().includes('empty')) {
@@ -215,11 +218,7 @@ async function setQuantity(item: ShoppingItem, groundModel: GroundingModel) {
 
 // --- Per-item flow ---
 
-async function addItemToCart(
-  item: ShoppingItem,
-  groundModel: GroundingModel,
-  askModel: AskModel,
-): Promise<boolean> {
+async function addItemToCart(item: ShoppingItem, groundModel: GroundingModel, askModel: AskModel): Promise<boolean> {
   const result = await selectProduct(item, groundModel, askModel)
   if (!result) {
     log.warn(`  ⚠ skipped — not found on Redmart`)

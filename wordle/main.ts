@@ -7,20 +7,28 @@
 // Requires: OPENROUTER_API_KEY set
 
 import {
-  App, FocusPolicy, Visibility,
-  KeyboardController, Key, Direction,
-  MouseController, Button, Coordinate,
-  screenshotFull, Screen, initLogger,
+  App,
+  FocusPolicy,
+  Visibility,
+  KeyboardController,
+  Key,
+  Direction,
+  MouseController,
+  Button,
+  Coordinate,
+  screenshotFull,
+  Screen,
+  initLogger,
   AskModel,
 } from '@simular-ai/simulang-js'
 
 initLogger(null, 'warn')
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
-const kb  = new KeyboardController()
+const kb = new KeyboardController()
 const ask = AskModel.default()
 
-const OPENER = 'crane'   // strong statistical opener — change if you like
+const OPENER = 'crane' // strong statistical opener — change if you like
 
 function takeShot() {
   const s = screenshotFull(true, Screen.mainScreen())
@@ -32,7 +40,7 @@ function takeShot() {
 async function typeWord(word: string) {
   for (const ch of word.toUpperCase()) {
     kb.text(ch)
-    await sleep(80)   // small gap so the game registers each keypress
+    await sleep(80) // small gap so the game registers each keypress
   }
   await sleep(200)
   kb.key(Key.Return, Direction.Click)
@@ -49,12 +57,16 @@ await sleep(4000)
 // Click the game board to give it keyboard focus
 // The tile grid is always roughly centred horizontally and in the upper 2/3 of the page
 const boardShot = takeShot()
-const boardResp = ask.ask(
-  'In this 1920×1080 Wordle screenshot, give the pixel coordinates of the CENTER of the 5×6 tile grid.\nReply ONLY: X: <integer>, Y: <integer>',
-  null, [boardShot]
-).trim()
-const bxm = boardResp.match(/X:\s*(\d+)/i), bym = boardResp.match(/Y:\s*(\d+)/i)
-const boardX = bxm ? +bxm[1] : 480   // fallback to typical position
+const boardResp = ask
+  .ask(
+    'In this 1920×1080 Wordle screenshot, give the pixel coordinates of the CENTER of the 5×6 tile grid.\nReply ONLY: X: <integer>, Y: <integer>',
+    null,
+    [boardShot],
+  )
+  .trim()
+const bxm = boardResp.match(/X:\s*(\d+)/i),
+  bym = boardResp.match(/Y:\s*(\d+)/i)
+const boardX = bxm ? +bxm[1] : 480 // fallback to typical position
 const boardY = bym ? +bym[1] : 380
 console.log(`    Board centre @ (${boardX}, ${boardY})`)
 
@@ -119,18 +131,24 @@ for (let guess = 2; guess <= 6; guess++) {
   let attempts = 0
   while (attempts < 5) {
     attempts++
-    const s    = takeShot()
+    const s = takeShot()
     const resp = ask.ask(makeReadPrompt([...guessed]), null, [s]).trim()
 
     // Last line is the word, preceding lines are reasoning
-    const lines    = resp.split('\n').map((l: string) => l.trim()).filter(Boolean)
+    const lines = resp
+      .split('\n')
+      .map((l: string) => l.trim())
+      .filter(Boolean)
     const lastLine = lines[lines.length - 1].toUpperCase().replace(/[^A-Z]/g, '')
-    const reason   = lines.slice(0, -1).join(' ')
+    const reason = lines.slice(0, -1).join(' ')
 
     if (reason) console.log(`  Reasoning: ${reason}`)
     console.log(`  Next guess: ${lastLine}`)
 
-    if (lastLine === 'DONE') { console.log('  LLM says done.'); break }
+    if (lastLine === 'DONE') {
+      console.log('  LLM says done.')
+      break
+    }
 
     if (lastLine.length !== 5 || !/^[A-Z]{5}$/.test(lastLine)) {
       console.log(`  ⚠️  "${lastLine}" not valid — retrying`)
@@ -145,7 +163,10 @@ for (let guess = 2; guess <= 6; guess++) {
     break
   }
 
-  if (!next) { console.log('  Could not get a valid new word after 5 attempts.'); break }
+  if (!next) {
+    console.log('  Could not get a valid new word after 5 attempts.')
+    break
+  }
 
   guessed.add(next)
   focusBoard()
@@ -157,8 +178,14 @@ for (let guess = 2; guess <= 6; guess++) {
   const s = takeShot()
   const status = ask.ask(CHECK_PROMPT, null, [s]).trim().toUpperCase()
   console.log(`  Status: ${status}`)
-  if (status.startsWith('WIN'))  { console.log('\n🎉  Solved it!'); break }
-  if (status.startsWith('LOSS')) { console.log('\n😔  Out of guesses.'); break }
+  if (status.startsWith('WIN')) {
+    console.log('\n🎉  Solved it!')
+    break
+  }
+  if (status.startsWith('LOSS')) {
+    console.log('\n😔  Out of guesses.')
+    break
+  }
 }
 
 // Final status

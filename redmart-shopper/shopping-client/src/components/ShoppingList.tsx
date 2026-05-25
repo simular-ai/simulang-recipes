@@ -14,7 +14,9 @@ interface Props {
 
 export default function ShoppingList({ save, dirty, onChange, onSave, onChangeFile }: Props) {
   useEffect(() => {
-    const handler = (e: BeforeUnloadEvent) => { if (dirty) e.preventDefault() }
+    const handler = (e: BeforeUnloadEvent) => {
+      if (dirty) e.preventDefault()
+    }
     window.addEventListener('beforeunload', handler)
     return () => window.removeEventListener('beforeunload', handler)
   }, [dirty])
@@ -37,7 +39,7 @@ export default function ShoppingList({ save, dirty, onChange, onSave, onChangeFi
   async function handleSave() {
     const withIds = {
       ...save,
-      shoppingList: save.shoppingList.map(item => ({
+      shoppingList: save.shoppingList.map((item) => ({
         ...item,
         id: item.id || slugify(item.name) || crypto.randomUUID(),
       })),
@@ -51,12 +53,16 @@ export default function ShoppingList({ save, dirty, onChange, onSave, onChangeFi
         These items will be added to your Redmart cart weekly. You'll still need to review and confirm payment manually.
       </p>
       <div className="toolbar">
-        <button className="btn-ghost" onClick={addItem}>+ Add item</button>
-        <button className="btn-primary" onClick={handleSave} disabled={!dirty}>Save</button>
-        <span className={`status-bar ${dirty ? 'unsaved' : 'saved'}`}>
-          {dirty ? 'Unsaved changes' : 'Saved'}
-        </span>
-        <button className="btn-ghost btn-small" onClick={onChangeFile}>Change file…</button>
+        <button className="btn-ghost" onClick={addItem}>
+          + Add item
+        </button>
+        <button className="btn-primary" onClick={handleSave} disabled={!dirty}>
+          Save
+        </button>
+        <span className={`status-bar ${dirty ? 'unsaved' : 'saved'}`}>{dirty ? 'Unsaved changes' : 'Saved'}</span>
+        <button className="btn-ghost btn-small" onClick={onChangeFile}>
+          Change file…
+        </button>
       </div>
 
       {save.shoppingList.length === 0 ? (
@@ -79,7 +85,7 @@ export default function ShoppingList({ save, dirty, onChange, onSave, onChangeFi
               <ItemRow
                 key={item.id}
                 item={item}
-                onChange={updated => updateItem(i, updated)}
+                onChange={(updated) => updateItem(i, updated)}
                 onRemove={() => removeItem(i)}
               />
             ))}

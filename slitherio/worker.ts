@@ -9,25 +9,28 @@ import { Jimp } from 'jimp'
 import { screenshotCropped, screenshotFull, Screen, AskModel } from '@simular-ai/simulang-js'
 
 const { cropX, cropY, cropW, cropH } = workerData as {
-  cropX: number; cropY: number; cropW: number; cropH: number
+  cropX: number
+  cropY: number
+  cropW: number
+  cropH: number
 }
 
-const __dirname  = dirname(fileURLToPath(import.meta.url))
-const DEBUG      = process.env.SLITHER_DEBUG === '1'
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const DEBUG = process.env.SLITHER_DEBUG === '1'
 const DEBUG_PATH = join(__dirname, 'debug_binary.png')
 
 // ─── Tuning ───────────────────────────────────────────────────────────────────
-const BRIGHTNESS_THRESH  = 80   // pixels brighter than this = foreground (0-255)
-const MIN_COMPONENT_SIZE = 800  // ignore small blobs — snake bodies are large, food/glow are tiny
-const THREAT_THRESHOLD   = 2    // ≥ this many large components = enemy nearby
-const DEBUG_EVERY        = 20   // save debug image every N iterations
+const BRIGHTNESS_THRESH = 80 // pixels brighter than this = foreground (0-255)
+const MIN_COMPONENT_SIZE = 800 // ignore small blobs — snake bodies are large, food/glow are tiny
+const THREAT_THRESHOLD = 2 // ≥ this many large components = enemy nearby
+const DEBUG_EVERY = 20 // save debug image every N iterations
 
 // ─── Connected components with 5px radius connectivity ────────────────────────
 // Instead of 4-connected neighbors, each foreground pixel connects to any other
 // foreground pixel within a 5px radius. This bridges small gaps in the snake
 // body when it curves near the crop boundary, preventing our own snake from
 // being split into 2 components.
-const CONNECT_R  = 8
+const CONNECT_R = 8
 const CONNECT_R2 = CONNECT_R * CONNECT_R
 
 function countComponents(binary: Uint8Array, w: number, h: number): number {
@@ -44,16 +47,23 @@ function countComponents(binary: Uint8Array, w: number, h: number): number {
     while (queue.length > 0) {
       const idx = queue.pop()!
       size++
-      const x = idx % w, y = (idx - x) / w
+      const x = idx % w,
+        y = (idx - x) / w
 
-      const x0 = Math.max(0, x - CONNECT_R), x1 = Math.min(w - 1, x + CONNECT_R)
-      const y0 = Math.max(0, y - CONNECT_R), y1 = Math.min(h - 1, y + CONNECT_R)
+      const x0 = Math.max(0, x - CONNECT_R),
+        x1 = Math.min(w - 1, x + CONNECT_R)
+      const y0 = Math.max(0, y - CONNECT_R),
+        y1 = Math.min(h - 1, y + CONNECT_R)
       for (let ny = y0; ny <= y1; ny++) {
         for (let nx = x0; nx <= x1; nx++) {
-          const dx = nx - x, dy = ny - y
+          const dx = nx - x,
+            dy = ny - y
           if (dx * dx + dy * dy > CONNECT_R2) continue
           const ni = ny * w + nx
-          if (binary[ni] && !visited[ni]) { visited[ni] = 1; queue.push(ni) }
+          if (binary[ni] && !visited[ni]) {
+            visited[ni] = 1
+            queue.push(ni)
+          }
         }
       }
     }
@@ -64,7 +74,7 @@ function countComponents(binary: Uint8Array, w: number, h: number): number {
 }
 
 // ─── Main loop ────────────────────────────────────────────────────────────────
-const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const start = Date.now()
 const ts = () => `+${((Date.now() - start) / 1000).toFixed(2)}s`
 
@@ -76,11 +86,11 @@ while (true) {
 
   // Decode directly from base64 — no tmp file, no disk I/O
   const shot = screenshotCropped(cropX, cropY, cropW, cropH, true)
-  const b64  = shot.base64().replace(/^data:image\/\w+;base64,/, '')
-  const img  = await Jimp.read(Buffer.from(b64, 'base64'))
-  const w    = img.width
-  const h    = img.height
-  const data = img.bitmap.data           // RGBA flat array, 4 bytes per pixel
+  const b64 = shot.base64().replace(/^data:image\/\w+;base64,/, '')
+  const img = await Jimp.read(Buffer.from(b64, 'base64'))
+  const w = img.width
+  const h = img.height
+  const data = img.bitmap.data // RGBA flat array, 4 bytes per pixel
   const binary = new Uint8Array(w * h)
 
   for (let y = 0; y < h; y++) {
@@ -107,7 +117,7 @@ while (true) {
       for (let x = 0; x < w; x++) {
         const v = binary[y * w + x] ? 255 : 0
         const offset = (y * w + x) * 4
-        debug.bitmap.data[offset]     = v
+        debug.bitmap.data[offset] = v
         debug.bitmap.data[offset + 1] = v
         debug.bitmap.data[offset + 2] = v
         debug.bitmap.data[offset + 3] = 255

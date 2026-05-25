@@ -20,12 +20,14 @@ An Expectimax bot that plays [2048 by Ketchapp](https://apps.apple.com/sg/app/20
 ## How to Run
 
 **Prerequisites:**
+
 - simulang installed (`simulang run` available in your terminal)
 - 2048 by Ketchapp (Designed for iPad) installed from the Mac App Store
 - `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - macOS screen recording permission granted to your terminal
 
 **Steps:**
+
 1. `cd mac-2048-player`
 2. `npm install`
 3. `simulang run main.ts`

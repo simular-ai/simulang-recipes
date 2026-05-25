@@ -20,7 +20,10 @@ export default function App() {
     setState({ status: 'loading' })
     try {
       const pointer = await api.getPointer()
-      if (!pointer.savePath) { setState({ status: 'setup', error: null }); return }
+      if (!pointer.savePath) {
+        setState({ status: 'setup', error: null })
+        return
+      }
       const save = await api.getSave()
       setState({ status: 'ready', save, dirty: false })
     } catch (e) {
@@ -28,7 +31,9 @@ export default function App() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+    load()
+  }, [])
 
   async function handleSetPath(path: string) {
     await api.setPointer(path)

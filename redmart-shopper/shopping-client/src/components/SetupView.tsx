@@ -36,7 +36,9 @@ export default function SetupView({ error, onSetPath }: Props) {
   return (
     <div className="setup-view">
       <h2>Connect save file</h2>
-      <p>Choose your <code>save.json</code> file to get started.</p>
+      <p>
+        Choose your <code>save.json</code> file to get started.
+      </p>
       {err && <div className="error-banner">{err}</div>}
       <button className="btn-primary" onClick={handleBrowse}>
         Browse…
@@ -45,7 +47,7 @@ export default function SetupView({ error, onSetPath }: Props) {
         <input
           type="text"
           value={path}
-          onChange={e => setPath(e.target.value)}
+          onChange={(e) => setPath(e.target.value)}
           placeholder="/Users/you/redmart-shopper/save.json"
           spellCheck={false}
         />

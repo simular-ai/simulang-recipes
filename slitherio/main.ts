@@ -37,7 +37,7 @@ initLogger(null, 'warn')
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const mouse = new MouseController()
-const kb    = new KeyboardController()
+const kb = new KeyboardController()
 const model = GroundingModel.default()
 
 // Spam the mute key (F10) rapidly to signal panic — very visible on screen
@@ -76,7 +76,8 @@ const calibShot = screenshotFull(true, Screen.mainScreen())
 const [cx, cy] = model.ground(calibShot, 'eyes of the snake')
 console.log(`    centre → (${Math.round(cx)}, ${Math.round(cy)})`)
 
-const cropW = 1200, cropH = 800
+const cropW = 1200,
+  cropH = 800
 const cropX = Math.round(cx - cropW / 2)
 const cropY = Math.round(cy - cropH / 2)
 
@@ -92,11 +93,22 @@ const worker = new Worker(join(__dirname, 'worker.ts'), {
 let gameOver = false
 
 worker.on('message', ({ threat, gameOver: over }: { threat: boolean; gameOver: boolean }) => {
-  if (over) { gameOver = true; console.log('[main] game over — stopping'); return }
+  if (over) {
+    gameOver = true
+    console.log('[main] game over — stopping')
+    return
+  }
   console.log(`[main←worker] threat=${threat} panicking=${panicking}`)
 
-  if (threat && !panicking) { direction = 1; spamMute(5); console.log('[main] PANIC ON') }
-  if (!threat && panicking) { nextSwitch = tick + 80; console.log('[main] PANIC OFF') }
+  if (threat && !panicking) {
+    direction = 1
+    spamMute(5)
+    console.log('[main] PANIC ON')
+  }
+  if (!threat && panicking) {
+    nextSwitch = tick + 80
+    console.log('[main] PANIC OFF')
+  }
   panicking = threat
 })
 
@@ -110,7 +122,7 @@ worker.on('error', (err: unknown) => {
 const TICK_MS = 50
 
 const MODES = [
-  { radius: screenW * 0.08, speed: 0.05, minTicks: 25, maxTicks: 50, label: 'wide'  },
+  { radius: screenW * 0.08, speed: 0.05, minTicks: 25, maxTicks: 50, label: 'wide' },
   { radius: screenW * 0.03, speed: 0.12, minTicks: 15, maxTicks: 30, label: 'tight' },
 ]
 const PANIC = { radius: screenW * 0.018, speed: 0.18 }
@@ -120,23 +132,27 @@ spamMute(3)
 
 console.log('🎮  Playing… Press Ctrl+C to stop.\n')
 
-let angle      = -Math.PI / 2
-let direction  = 1
-let modeIdx    = 0
+let angle = -Math.PI / 2
+let direction = 1
+let modeIdx = 0
 let nextSwitch = MODES[0].minTicks + Math.floor(Math.random() * (MODES[0].maxTicks - MODES[0].minTicks))
 
 // Manual override — hold Shift to take control, release to hand back
-const MANUAL_TICKS = 60  // ticks of control after Shift is released (~3s)
+const MANUAL_TICKS = 60 // ticks of control after Shift is released (~3s)
 let manualUntil = 0
 
 function isShiftHeld(): boolean {
   try {
     // JXA reads NSEvent.modifierFlags directly — 131072 = NSEventModifierFlagShift
-    const out = execFileSync('osascript', ['-l', 'JavaScript', '-e',
-      'ObjC.import("AppKit"); ($.NSEvent.modifierFlags & 131072) ? "true" : "false"'
-    ], { encoding: 'utf8', timeout: 100 }).trim()
+    const out = execFileSync(
+      'osascript',
+      ['-l', 'JavaScript', '-e', 'ObjC.import("AppKit"); ($.NSEvent.modifierFlags & 131072) ? "true" : "false"'],
+      { encoding: 'utf8', timeout: 100 },
+    ).trim()
     return out === 'true'
-  } catch { return false }
+  } catch {
+    return false
+  }
 }
 
 let tick = 0
@@ -157,19 +173,15 @@ while (!gameOver) {
   const { radius, speed } = panicking ? PANIC : MODES[modeIdx]
   angle += direction * speed
 
-  mouse.moveMouse(
-    cx + Math.cos(angle) * radius,
-    cy + Math.sin(angle) * radius,
-    Coordinate.Abs,
-  )
+  mouse.moveMouse(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius, Coordinate.Abs)
 
   // Spam mute every 5 ticks while panicking — continuous indicator
   if (panicking && tick % 5 === 0) spamMute(1)
 
   if (!panicking && tick >= nextSwitch) {
-    modeIdx    = 1 - modeIdx   // always alternate modes
-    direction *= -1             // always flip direction
-    const m    = MODES[modeIdx]
+    modeIdx = 1 - modeIdx // always alternate modes
+    direction *= -1 // always flip direction
+    const m = MODES[modeIdx]
     nextSwitch = tick + m.minTicks + Math.floor(Math.random() * (m.maxTicks - m.minTicks))
   }
 

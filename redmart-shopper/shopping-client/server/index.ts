@@ -12,7 +12,7 @@ const execAsync = promisify(exec)
 async function openFilePicker(): Promise<string | null> {
   try {
     const { stdout } = await execAsync(
-      `osascript -e 'POSIX path of (choose file with prompt "Select your save.json" of type {"public.json"})'`
+      `osascript -e 'POSIX path of (choose file with prompt "Select your save.json" of type {"public.json"})'`,
     )
     return stdout.trim()
   } catch {
@@ -93,8 +93,14 @@ app.put('/api/save', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
   const { text, attachments } = req.body
-  if (typeof text !== 'string') { res.status(400).json({ error: 'text must be a string' }); return }
-  if (!Array.isArray(attachments)) { res.status(400).json({ error: 'attachments must be an array' }); return }
+  if (typeof text !== 'string') {
+    res.status(400).json({ error: 'text must be a string' })
+    return
+  }
+  if (!Array.isArray(attachments)) {
+    res.status(400).json({ error: 'attachments must be an array' })
+    return
+  }
   try {
     res.json(await sendMessage(text, attachments))
   } catch (e) {
@@ -102,13 +108,25 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
-app.post('/api/chat/confirm-removal', (_req, res) => { confirmRemoval(); res.json({ ok: true }) })
-app.post('/api/chat/deny-removal',    (_req, res) => { denyRemoval();    res.json({ ok: true }) })
-app.delete('/api/chat',               (_req, res) => { resetConversation(); res.json({ ok: true }) })
+app.post('/api/chat/confirm-removal', (_req, res) => {
+  confirmRemoval()
+  res.json({ ok: true })
+})
+app.post('/api/chat/deny-removal', (_req, res) => {
+  denyRemoval()
+  res.json({ ok: true })
+})
+app.delete('/api/chat', (_req, res) => {
+  resetConversation()
+  res.json({ ok: true })
+})
 
 app.post('/api/pick-file', async (_req, res) => {
   const path = await openFilePicker()
-  if (!path) { res.json({ path: null }); return }
+  if (!path) {
+    res.json({ path: null })
+    return
+  }
   res.json({ path })
 })
 
@@ -119,13 +137,15 @@ if (existsSync(distPath)) {
   })
 }
 
-app.listen(PORT, () => {
-  console.log(`→ shopping client: http://localhost:${PORT}`)
-}).on('error', (err: NodeJS.ErrnoException) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`✗ Port ${PORT} is already in use — is the shopping client already running?`)
-    console.error(`  To kill it: lsof -ti:${PORT} | xargs kill`)
-    process.exit(1)
-  }
-  throw err
-})
+app
+  .listen(PORT, () => {
+    console.log(`→ shopping client: http://localhost:${PORT}`)
+  })
+  .on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`✗ Port ${PORT} is already in use — is the shopping client already running?`)
+      console.error(`  To kill it: lsof -ti:${PORT} | xargs kill`)
+      process.exit(1)
+    }
+    throw err
+  })
