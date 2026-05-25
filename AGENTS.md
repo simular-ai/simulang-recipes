@@ -16,11 +16,18 @@ retired). Current version: `^6.0.1`.
 
 ```ts
 import {
-  App, FocusPolicy, Visibility,
-  AccessibilityTree, TraversalOrder,
-  GroundingModel, AskModel,
-  MouseController, KeyboardController,
-  Clipboard, Screen, screenshotFull,
+  App,
+  FocusPolicy,
+  Visibility,
+  AccessibilityTree,
+  TraversalOrder,
+  GroundingModel,
+  AskModel,
+  MouseController,
+  KeyboardController,
+  Clipboard,
+  Screen,
+  screenshotFull,
   initLogger,
 } from '@simular-ai/simulang-js'
 ```
@@ -57,8 +64,8 @@ Never wrap logic in an async `main()` function — it's unnecessary noise.
 ```ts
 // Browser (preferred — works with Chrome, Safari, Arc, Firefox)
 const browser = App.defaultBrowser().open(url, FocusPolicy.Steal, Visibility.Show, true)
-browser.enableAccessibility()   // always call this for browser windows
-await sleep(3000)               // wait for AX tree to populate
+browser.enableAccessibility() // always call this for browser windows
+await sleep(3000) // wait for AX tree to populate
 
 // Native app by exact name
 const notes = App.exactName('Notes').open(null, FocusPolicy.Steal, Visibility.Show, true)
@@ -90,7 +97,7 @@ if (input?.refId !== undefined) tree.setValue(input.refId, 'hello')
 ## Vision grounding — for elements the AX tree doesn't expose
 
 ```ts
-const model = GroundingModel.default()   // reads OPENROUTER_API_KEY automatically
+const model = GroundingModel.default() // reads OPENROUTER_API_KEY automatically
 
 // Shrink + compress before sending — cuts latency and cost
 const shot = screenshotFull(true, Screen.mainScreen())
@@ -109,7 +116,7 @@ physical pixels.
 ## AskModel — for reasoning over screenshots
 
 ```ts
-const ask = AskModel.default()   // reads OPENROUTER_API_KEY automatically
+const ask = AskModel.default() // reads OPENROUTER_API_KEY automatically
 
 const shot = screenshotFull(true, Screen.mainScreen())
 shot.shrink(1920, 1080)
@@ -125,14 +132,14 @@ and the result at the bottom.
 ## Clipboard
 
 ```ts
-new Clipboard().pasteText(longString)   // paste without clobbering clipboard history
+new Clipboard().pasteText(longString) // paste without clobbering clipboard history
 ```
 
 ## Mouse and keyboard
 
 ```ts
 const mouse = new MouseController()
-const kb    = new KeyboardController()
+const kb = new KeyboardController()
 
 mouse.moveMouse(x, y, Coordinate.Abs)
 mouse.button(Button.Left, Direction.Click)
@@ -141,7 +148,7 @@ kb.key(Key.Meta, Direction.Press)
 kb.key(Key.C, Direction.Click)
 kb.key(Key.Meta, Direction.Release)
 
-kb.text('hello')   // types a string character by character
+kb.text('hello') // types a string character by character
 ```
 
 ## Worker threads for parallel work
@@ -156,7 +163,9 @@ errors.
 // main.ts
 import { Worker } from 'node:worker_threads'
 const worker = new Worker(new URL('./worker.ts', import.meta.url))
-worker.on('message', (msg) => { /* handle threat state */ })
+worker.on('message', (msg) => {
+  /* handle threat state */
+})
 
 // worker.ts
 import { screenshotCropped, Screen } from '@simular-ai/simulang-js'
@@ -183,7 +192,10 @@ Every recipe `package.json` must have:
 }
 ```
 
-No root-level `package.json` or workspace. Each recipe is independent.
+Each recipe is independent — there is **no npm workspace** linking them. The
+root `package.json` exists only to hold repo-wide dev tooling (Prettier,
+tracked by Dependabot) and exposes `npm run format` / `npm run format:check`.
+Never add recipe-shared runtime dependencies there.
 
 ## tsconfig.json shape
 
@@ -208,7 +220,7 @@ No root-level `package.json` or workspace. Each recipe is independent.
 ## Logging conventions
 
 ```ts
-initLogger(null, 'warn')   // silence [info] mouse/key/screenshot chatter
+initLogger(null, 'warn') // silence [info] mouse/key/screenshot chatter
 
 // Section banners for long scripts
 console.log('── Phase 1: Collecting data ────────────────')

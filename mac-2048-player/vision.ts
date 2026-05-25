@@ -36,10 +36,8 @@ export function computeSlots(): GridSlots | null {
   try {
     const nodes = AccessibilityTree.fromForeground().find(TraversalOrder.BreadthFirst)
 
-    const logo = nodes.find(
-      n => n.value === '2048' && n.name === '' && (n.boundingBox.bottom - n.boundingBox.top) > 50
-    )
-    const subtitle = nodes.find(n => (n.value ?? '').startsWith('Join the numbers'))
+    const logo = nodes.find((n) => n.value === '2048' && n.name === '' && n.boundingBox.bottom - n.boundingBox.top > 50)
+    const subtitle = nodes.find((n) => (n.value ?? '').startsWith('Join the numbers'))
     if (!logo || !subtitle) return null
 
     const gap = subtitle.boundingBox.top - logo.boundingBox.bottom
@@ -49,7 +47,7 @@ export function computeSlots(): GridSlots | null {
 
     console.log(`Grid slots  cellSize=${cellSize.toFixed(1)} logical pts`)
     for (let i = 0; i < 4; i++) {
-      const ry = (gridTop  + (i + 0.5) * cellSize).toFixed(1)
+      const ry = (gridTop + (i + 0.5) * cellSize).toFixed(1)
       const cx = (gridLeft + (i + 0.5) * cellSize).toFixed(1)
       console.log(`  row${i} y=${ry}    col${i} x=${cx}`)
     }
@@ -71,8 +69,11 @@ export function readBoard(slots: GridSlots): Board | null {
       const value = parseInt(n.value ?? '')
       if (!TILE_VALUES.has(value)) continue
       const col = Math.floor(((n.boundingBox.left + n.boundingBox.right) / 2 - gridLeft) / cellSize)
-      const row = Math.floor(((n.boundingBox.top  + n.boundingBox.bottom) / 2 - gridTop)  / cellSize)
-      if (row >= 0 && row < 4 && col >= 0 && col < 4) { board[row][col] = value; placed++ }
+      const row = Math.floor(((n.boundingBox.top + n.boundingBox.bottom) / 2 - gridTop) / cellSize)
+      if (row >= 0 && row < 4 && col >= 0 && col < 4) {
+        board[row][col] = value
+        placed++
+      }
     }
 
     return placed > 0 ? board : null

@@ -1,8 +1,16 @@
-import { AccessibilityTree, TraversalOrder, Clipboard, GroundingModel, screenshotFull, Screen, type AccessibilityNodeJs } from '@simular-ai/simulang-js'
+import {
+  AccessibilityTree,
+  TraversalOrder,
+  Clipboard,
+  GroundingModel,
+  screenshotFull,
+  Screen,
+  type AccessibilityNodeJs,
+} from '@simular-ai/simulang-js'
 import { click, sleep } from './controls.ts'
 
 export interface Counts {
-  likes:  number
+  likes: number
   shares: number
 }
 
@@ -11,21 +19,21 @@ export function getLikesAndShares(): Counts {
   const current = (matches: AccessibilityNodeJs[]) =>
     matches.sort((a, b) => a.boundingBox.top - b.boundingBox.top).at(-2)
 
-  const likeNode  = current(nodes.filter(n => n.name.toLowerCase().startsWith('like video')))
-  const shareNode = current(nodes.filter(n => n.name.toLowerCase().startsWith('share video')))
+  const likeNode = current(nodes.filter((n) => n.name.toLowerCase().startsWith('like video')))
+  const shareNode = current(nodes.filter((n) => n.name.toLowerCase().startsWith('share video')))
 
   return {
-    likes:  parseCount(likeNode?.name  ?? ''),
+    likes: parseCount(likeNode?.name ?? ''),
     shares: parseCount(shareNode?.name ?? ''),
   }
 }
 
 export async function getVideoLink(model: GroundingModel): Promise<string | null> {
-  const tree  = AccessibilityTree.fromForeground()
+  const tree = AccessibilityTree.fromForeground()
   const nodes = tree.find(TraversalOrder.BreadthFirst)
 
   const shareNode = nodes
-    .filter(n => n.name.toLowerCase().startsWith('share video'))
+    .filter((n) => n.name.toLowerCase().startsWith('share video'))
     .sort((a, b) => a.boundingBox.top - b.boundingBox.top)[0]
 
   if (shareNode?.refId !== undefined) {
@@ -42,7 +50,10 @@ export async function getVideoLink(model: GroundingModel): Promise<string | null
 }
 
 function parseCount(raw: string): number {
-  const m = raw.toLowerCase().replace(/,/g, '').match(/(\d+(?:\.\d+)?)\s*([km])/)
+  const m = raw
+    .toLowerCase()
+    .replace(/,/g, '')
+    .match(/(\d+(?:\.\d+)?)\s*([km])/)
   if (m) {
     const n = parseFloat(m[1])
     return m[2] === 'k' ? n * 1_000 : n * 1_000_000

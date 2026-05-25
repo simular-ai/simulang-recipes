@@ -21,6 +21,7 @@ The benchmark compares three sorting implementations across four array sizes (1k
 ## How to Run
 
 **Prerequisites:**
+
 - Simulang installed (`simulang run` available in your terminal)
 - macOS (uses Apple Notes and Xcode Command Line Tools)
 - No API key required
@@ -28,6 +29,7 @@ The benchmark compares three sorting implementations across four array sizes (1k
 - `npm install` run once in this folder
 
 **Steps:**
+
 1. `cd simple-profiler`
 2. `simulang run main.ts`
 

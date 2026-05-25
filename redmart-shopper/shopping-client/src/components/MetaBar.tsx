@@ -9,7 +9,12 @@ function nextShopDate(lastPurchaseDate: string | null): Date {
   today.setHours(0, 0, 0, 0)
 
   const earliest = lastPurchaseDate
-    ? (() => { const d = new Date(lastPurchaseDate); d.setHours(0,0,0,0); d.setDate(d.getDate() + 7); return d })()
+    ? (() => {
+        const d = new Date(lastPurchaseDate)
+        d.setHours(0, 0, 0, 0)
+        d.setDate(d.getDate() + 7)
+        return d
+      })()
     : today
 
   const daysUntilSat = (6 - earliest.getDay() + 7) % 7
@@ -28,11 +33,15 @@ export default function MetaBar({ save }: Props) {
 
   return (
     <div className="meta-bar">
-      <span>Last purchase: <strong>{save.lastPurchaseDate ?? 'Never'}</strong></span>
+      <span>
+        Last purchase: <strong>{save.lastPurchaseDate ?? 'Never'}</strong>
+      </span>
       <span>
         Next purchase: <strong className={isOverdue ? 'overdue' : ''}>{formatDate(next)}</strong>
       </span>
-      <span>Cart status: <strong>{save.cartStatus}</strong></span>
+      <span>
+        Cart status: <strong>{save.cartStatus}</strong>
+      </span>
     </div>
   )
 }

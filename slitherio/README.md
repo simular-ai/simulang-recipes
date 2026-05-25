@@ -11,6 +11,7 @@ Opens slither.io, enters a nickname, and plays automatically using two concurren
 ## Key APIs Used
 
 **Main thread**
+
 - `App.defaultBrowser().open()` — opens slither.io
 - `AccessibilityTree` + `setValue()` — fills the nickname field via the AX tree
 - `GroundingModel.default()` — used twice at startup: to click the Play button and to locate the snake's eyes for precise canvas calibration
@@ -20,6 +21,7 @@ Opens slither.io, enters a nickname, and plays automatically using two concurren
 - `Worker` (Node worker threads) — runs the pixel detection loop in parallel without blocking movement
 
 **Worker thread**
+
 - `screenshotCropped()` — captures a 1200×800 region centred on the snake
 - `Screenshot.base64()` — extracts image data without touching disk
 - `Jimp.read()` — decodes the image in memory for pixel access
@@ -29,12 +31,14 @@ Opens slither.io, enters a nickname, and plays automatically using two concurren
 ## How to Run
 
 **Prerequisites:**
+
 - Simulang installed (`simulang run` available in your terminal)
 - `OPENROUTER_API_KEY` required — [see setup instructions](../README.md#api-key-setup)
 - `npm install` run once in this folder
 - macOS (uses `osascript` for Shift key detection)
 
 **Steps:**
+
 1. `cd slitherio`
 2. `simulang run main.ts`
 

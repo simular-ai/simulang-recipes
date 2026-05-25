@@ -1,0 +1,12 @@
+{
+  "name": "simulang-recipes-tooling",
+  "private": true,
+  "description": "Root-level dev tooling for simulang-recipes. NOT an npm workspace — each recipe under */ is still independent. This package.json exists only so Dependabot can track tooling versions (Prettier, etc.).",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "3.8.3"
+  }
+}

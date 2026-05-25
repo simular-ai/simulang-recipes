@@ -14,11 +14,11 @@ We'd love to have your recipe here! Here's everything you need to know to get it
 
 Use kebab-case, and name it after what the recipe **does** rather than how it works:
 
-| Good | Bad |
-|------|-----|
+| Good                     | Bad            |
+| ------------------------ | -------------- |
 | `gmail-inbox-summarizer` | `automation-1` |
-| `github-pr-reviewer` | `my-script` |
-| `notion-daily-planner` | `test` |
+| `github-pr-reviewer`     | `my-script`    |
+| `notion-daily-planner`   | `test`         |
 
 ## What to Include
 
@@ -38,29 +38,36 @@ If your script uses vision grounding or `AskModel`, it needs `OPENROUTER_API_KEY
 
 Each recipe README should have these 6 sections:
 
-```markdown
+````markdown
 # Recipe Name
 
 ## Description
+
 2–3 sentences on what this automates, which apps or sites it touches,
 and which Simulang APIs it uses.
 
 ## Demo
+
 <!-- A GIF or video showing the automation running -->
+
 ![Demo](demo.gif)
 
 ## Key APIs Used
+
 - `App.defaultBrowser().open()` — launches and attaches to the browser
 - `tree.find()` — searches the accessibility tree by role and label
 - `tree.activate(refId)` — clicks an element
 - `tree.setValue(refId, text)` — types into a text field
 
 ## How to Run
+
 **Prerequisites:**
+
 - Simulang installed (`simulang run` available in your terminal)
-- `OPENROUTER_API_KEY` required — [see setup instructions](README.md#api-key-setup) *(or "No API key required" if none needed)*
+- `OPENROUTER_API_KEY` required — [see setup instructions](README.md#api-key-setup) _(or "No API key required" if none needed)_
 
 **Steps:**
+
 1. `cd your-recipe-name`
 2. `npm install`
 3. `simulang run main.ts`
@@ -68,13 +75,15 @@ and which Simulang APIs it uses.
 Tip: `simulang run -i` opens an interactive REPL — great for exploring the accessibility tree before writing the full script.
 
 ## Workflow Diagram
+
 \```
 [Open app] → [Snapshot tree] → [Find element] → [Act on refId] → [Output result]
 \```
 
 ## Notes
+
 Anything worth knowing — limitations, gotchas, or ways to adapt this recipe.
-```
+````
 
 ## Before You Submit
 

@@ -13,10 +13,10 @@ export function click(x: number, y: number): void {
 
 export function swipe(fromX: number, fromY: number, direction: SwipeDirection): void {
   const delta: Record<SwipeDirection, [number, number]> = {
-    up:    [0, -SWIPE_DISTANCE],
-    down:  [0,  SWIPE_DISTANCE],
-    left:  [-SWIPE_DISTANCE, 0],
-    right: [ SWIPE_DISTANCE, 0],
+    up: [0, -SWIPE_DISTANCE],
+    down: [0, SWIPE_DISTANCE],
+    left: [-SWIPE_DISTANCE, 0],
+    right: [SWIPE_DISTANCE, 0],
   }
   const [dx, dy] = delta[direction]
   mouse.moveMouse(fromX, fromY, Coordinate.Abs)
@@ -29,4 +29,4 @@ export function mousePosition(): [number, number] {
   return mouse.location()
 }
 
-export const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
+export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))

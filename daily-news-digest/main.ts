@@ -24,38 +24,38 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 
 function clean(raw: string): string {
   return raw
-    .replace(/\n+/g, ' ')                            // collapse newlines to space
-    .replace(/\s*\|\s*$/, '')                        // trailing " | " (CNN)
-    .replace(/\s+\d+:\d+$/, '')                      // video duration "1:29" (CNN)
-    .replace(/\s+\d+\s+MIN\s+READ$/i, '')            // " 2 MIN READ" (NYT)
-    .replace(/^LIVE\s+/i, '')                        // "LIVE " prefix (BBC)
-    .replace(/\s+\d+\s+(hr|min)s?\s+ago\b.*/i, '')  // "31 mins ago World…" (BBC)
-    .replace(/[-–—]\s*$/, '')                        // dangling dashes
+    .replace(/\n+/g, ' ') // collapse newlines to space
+    .replace(/\s*\|\s*$/, '') // trailing " | " (CNN)
+    .replace(/\s+\d+:\d+$/, '') // video duration "1:29" (CNN)
+    .replace(/\s+\d+\s+MIN\s+READ$/i, '') // " 2 MIN READ" (NYT)
+    .replace(/^LIVE\s+/i, '') // "LIVE " prefix (BBC)
+    .replace(/\s+\d+\s+(hr|min)s?\s+ago\b.*/i, '') // "31 mins ago World…" (BBC)
+    .replace(/[-–—]\s*$/, '') // dangling dashes
     .trim()
 }
 
 // ─── Headline filter ──────────────────────────────────────────────────────────
 
 const NOISE: RegExp[] = [
-  /^skip\s/i,                                          // skip links
-  /^british broadcasting/i,                            // BBC's own name
-  /subscribe/i,                                        // paywall prompts
+  /^skip\s/i, // skip links
+  /^british broadcasting/i, // BBC's own name
+  /subscribe/i, // paywall prompts
   /sign[\s-]?in/i,
   /log[\s-]?in/i,
-  /\bbutton\b/i,                                       // UI control labels
+  /\bbutton\b/i, // UI control labels
   /advertisement/i,
-  /^\d+\s+comments?/i,                                 // "387 comments" (HN)
+  /^\d+\s+comments?/i, // "387 comments" (HN)
   /\d+\s+(hour|hr)s?\s+ago/i,
-  /^\S+\.\S{2,4}$/,                                    // bare domains (HN)
+  /^\S+\.\S{2,4}$/, // bare domains (HN)
   /^hacker news$/i,
   /^(international|technology|sport|culture|travel|food)$/i,
-  /back to home/i,                                     // Guardian nav
+  /back to home/i, // Guardian nav
   /^(a|an)\s+(man|woman|person|marble|wooden|large|group|view|photo|statue)/i, // image alt text
-  /^president\s+\w+\s+(of|and)\s+/i,                  // image captions "President X and Y"
-  /^\$[\d.]+/,                                         // price-leading ad text
-  /your world to understand/i,                         // NYT subscription promo
-  /^[A-Z][a-z]+\s+(Mr\.|Ms\.|President|A\s+\w+\s+\w+ing)\s/,  // "Beijing Mr. Trump…" / "Beijing A staff member gesturing" (NYT photo captions)
-  /participates?\s+in\s+a\b/i,                        // "participates in a ceremony" (image alt)
+  /^president\s+\w+\s+(of|and)\s+/i, // image captions "President X and Y"
+  /^\$[\d.]+/, // price-leading ad text
+  /your world to understand/i, // NYT subscription promo
+  /^[A-Z][a-z]+\s+(Mr\.|Ms\.|President|A\s+\w+\s+\w+ing)\s/, // "Beijing Mr. Trump…" / "Beijing A staff member gesturing" (NYT photo captions)
+  /participates?\s+in\s+a\b/i, // "participates in a ceremony" (image alt)
   /\bas\s+(he|she|they|xi|trump|biden|putin)\s+\w+s\b/i, // "as Xi looks on", "as he boards" (image alt)
 ]
 
@@ -84,19 +84,17 @@ function scrapeHeadlines(max = 20): string[] {
     nodes = tree.find(TraversalOrder.DepthFirst, AriaRole.Link, null, false, max * 2, true)
   }
 
-  return nodes
-    .map((n) => clean(n.name))
-    .filter(isHeadline)
+  return nodes.map((n) => clean(n.name)).filter(isHeadline)
 }
 
 // ─── Sources ──────────────────────────────────────────────────────────────────
 
 const SOURCES = [
-  { label: 'CNN',          url: 'https://edition.cnn.com' },
-  { label: 'NY Times',     url: 'https://www.nytimes.com' },
-  { label: 'BBC News',     url: 'https://www.bbc.com/news' },
+  { label: 'CNN', url: 'https://edition.cnn.com' },
+  { label: 'NY Times', url: 'https://www.nytimes.com' },
+  { label: 'BBC News', url: 'https://www.bbc.com/news' },
   { label: 'The Guardian', url: 'https://www.theguardian.com/international' },
-  { label: 'Hacker News',  url: 'https://news.ycombinator.com' },
+  { label: 'Hacker News', url: 'https://news.ycombinator.com' },
 ]
 
 // ─── Collect ──────────────────────────────────────────────────────────────────
@@ -117,7 +115,10 @@ for (const { label, url } of SOURCES) {
 // ─── Format ───────────────────────────────────────────────────────────────────
 
 const today = new Date().toLocaleDateString('en-US', {
-  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
 })
 const divider = '─'.repeat(44)
 
@@ -126,7 +127,10 @@ let note = `Daily News Digest\n${today}\n${divider}\n\n`
 for (const { source, headlines } of digest) {
   note += `${source.toUpperCase()}\n`
   note += headlines.length
-    ? headlines.slice(0, 7).map((h) => `  • ${h}`).join('\n') + '\n'
+    ? headlines
+        .slice(0, 7)
+        .map((h) => `  • ${h}`)
+        .join('\n') + '\n'
     : '  (no headlines captured)\n'
   note += '\n'
 }

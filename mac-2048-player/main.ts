@@ -1,4 +1,14 @@
-import { App, FocusPolicy, Visibility, AccessibilityTree, TraversalOrder, KeyboardController, Key, Direction, Screen } from '@simular-ai/simulang-js'
+import {
+  App,
+  FocusPolicy,
+  Visibility,
+  AccessibilityTree,
+  TraversalOrder,
+  KeyboardController,
+  Key,
+  Direction,
+  Screen,
+} from '@simular-ai/simulang-js'
 import { click, swipe, sleep, mousePosition } from './controls.ts'
 import { capture, findByVision, computeSlots, readBoard } from './vision.ts'
 import { bestMove, isGameOver, printBoard } from './strategy.ts'
@@ -7,7 +17,10 @@ import type { Board } from './strategy.ts'
 const APP_NAME = '2048'
 const MAX_MOVES = 300
 
-process.on('SIGINT', () => { console.log('\nInterrupted.'); process.exit(0) })
+process.on('SIGINT', () => {
+  console.log('\nInterrupted.')
+  process.exit(0)
+})
 
 async function pollUntil<T>(fn: () => T | null, timeoutMs: number): Promise<T | null> {
   const deadline = Date.now() + timeoutMs
@@ -26,13 +39,11 @@ instance.focus()
 await sleep(300)
 
 const nodes = AccessibilityTree.fromForeground().find(TraversalOrder.BreadthFirst)
-const mainWindow = nodes.find(n => n.name === APP_NAME && (n.boundingBox.bottom - n.boundingBox.top) > 100)
+const mainWindow = nodes.find((n) => n.name === APP_NAME && n.boundingBox.bottom - n.boundingBox.top > 100)
 const [, , screenPhysW, screenPhysH] = Screen.mainScreen().dimensions()
 const winW = mainWindow ? mainWindow.boundingBox.right - mainWindow.boundingBox.left : 0
 const winH = mainWindow ? mainWindow.boundingBox.bottom - mainWindow.boundingBox.top : 0
-const isFullscreen = [1, 2].some(scale =>
-  winW * scale >= screenPhysW * 0.98 && winH * scale >= screenPhysH * 0.98
-)
+const isFullscreen = [1, 2].some((scale) => winW * scale >= screenPhysW * 0.98 && winH * scale >= screenPhysH * 0.98)
 if (!isFullscreen) {
   console.log('Not fullscreen — entering fullscreen...')
   const kb = new KeyboardController()
@@ -66,13 +77,12 @@ if (!boardResult) throw new Error('Could not locate the game board center')
 const [boardX, boardY] = boardResult.coords
 console.log(`Board center: (${boardX}, ${boardY})\n`)
 
-const gridRight  = slots.gridLeft + 4 * slots.cellSize
-const gridBottom = slots.gridTop  + 4 * slots.cellSize
+const gridRight = slots.gridLeft + 4 * slots.cellSize
+const gridBottom = slots.gridTop + 4 * slots.cellSize
 
 function isMouseInGrid(): boolean {
   const [mx, my] = mousePosition()
-  return mx >= slots.gridLeft && mx <= gridRight &&
-         my >= slots.gridTop  && my <= gridBottom
+  return mx >= slots.gridLeft && mx <= gridRight && my >= slots.gridTop && my <= gridBottom
 }
 
 // --- Game loop ---
@@ -84,7 +94,10 @@ async function waitForMove(prev: Board | null): Promise<void> {
   const deadline = Date.now() + 600
   while (Date.now() < deadline) {
     await sleep(30)
-    if (!isMouseInGrid()) { running = false; return }
+    if (!isMouseInGrid()) {
+      running = false
+      return
+    }
     const next = readBoard(slots)
     if (next && JSON.stringify(next) !== prevJson) return
   }
