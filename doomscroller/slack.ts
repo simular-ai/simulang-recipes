@@ -7,23 +7,22 @@ import {
   TraversalOrder,
   GroundingModel,
   screenshotFull,
-  Screen,
 } from '@simular-ai/simulang-js'
 import { click, typeText, pressEnter, sleep } from './controls.ts'
 
 export async function sendDM(message: string, friend: string, model: GroundingModel): Promise<void> {
-  App.exactName('Slack').open(null, FocusPolicy.Steal, Visibility.Show, true)
+  const slack = App.exactName('Slack').open(null, FocusPolicy.Steal, Visibility.Show, true)
   await sleep(1000)
 
-  click(
-    ...screenshotFull(true, Screen.mainScreen()).ground(
-      model,
-      `"${friend}" direct message item in the Slack left sidebar`,
-    ),
-  )
+  // Capture the screen Slack is on — Slack may live on a different monitor
+  // than the browser (a common dual-monitor layout).
+  const slackScreen = slack.windows()[0]?.screen()
+  if (!slackScreen) throw new Error('Slack window not found')
+
+  click(...screenshotFull(true, slackScreen).ground(model, `"${friend}" direct message item in the Slack left sidebar`))
   await sleep(3000)
 
-  const tree = AccessibilityTree.fromForeground()
+  const tree = AccessibilityTree.fromPid(slack.pid)
   const nodes = tree.find(TraversalOrder.BreadthFirst)
 
   const inputs = nodes.filter((n) => n.role === AriaRole.Textbox && n.refId !== undefined)

@@ -17,9 +17,9 @@ import {
   Button,
   Coordinate,
   screenshotFull,
-  Screen,
   initLogger,
   AskModel,
+  GroundingModel,
 } from '@simular-ai/simulang-js'
 
 initLogger(null, 'warn')
@@ -30,8 +30,23 @@ const ask = AskModel.default()
 
 const OPENER = 'crane' // strong statistical opener — change if you like
 
+// ─── Open game ────────────────────────────────────────────────────────────────
+
+const mouse = new MouseController()
+
+console.log('📝  Opening Wordle Unlimited…')
+const browser = App.defaultBrowser().open('https://wordleunlimited.org', FocusPolicy.Steal, Visibility.Show, true)
+await sleep(4000)
+
+// Resolve the screen the browser window is actually on — `Window.screen()`
+// matches the OS's owning-display heuristic, so this is correct even when
+// the browser is on a secondary monitor.
+const browserWindow = browser.windows()[0]
+if (!browserWindow) throw new Error('Browser window not found')
+const browserScreen = browserWindow.screen()
+
 function takeShot() {
-  const s = screenshotFull(true, Screen.mainScreen())
+  const s = screenshotFull(true, browserScreen)
   s.shrink(1920, 1080)
   s.compress(70)
   return s
@@ -46,28 +61,12 @@ async function typeWord(word: string) {
   kb.key(Key.Return, Direction.Click)
 }
 
-// ─── Open game ────────────────────────────────────────────────────────────────
-
-const mouse = new MouseController()
-
-console.log('📝  Opening Wordle Unlimited…')
-App.defaultBrowser().open('https://wordleunlimited.org', FocusPolicy.Steal, Visibility.Show, true)
-await sleep(4000)
-
-// Click the game board to give it keyboard focus
-// The tile grid is always roughly centred horizontally and in the upper 2/3 of the page
-const boardShot = takeShot()
-const boardResp = ask
-  .ask(
-    'In this 1920×1080 Wordle screenshot, give the pixel coordinates of the CENTER of the 5×6 tile grid.\nReply ONLY: X: <integer>, Y: <integer>',
-    null,
-    [boardShot],
-  )
-  .trim()
-const bxm = boardResp.match(/X:\s*(\d+)/i),
-  bym = boardResp.match(/Y:\s*(\d+)/i)
-const boardX = bxm ? +bxm[1] : 480 // fallback to typical position
-const boardY = bym ? +bym[1] : 380
+// Click the game board to give it keyboard focus. The tile grid is the only
+// "5×6 grid" thing on the page, so `GroundingModel` finds it in one shot
+// without any prompt engineering — and `screenshot.ground()` returns global
+// physical pixel coords directly, no manual conversion needed.
+const ground = GroundingModel.default()
+const [boardX, boardY] = takeShot().ground(ground, 'the 5 by 6 tile grid')
 console.log(`    Board centre @ (${boardX}, ${boardY})`)
 
 function focusBoard() {

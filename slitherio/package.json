@@ -4,7 +4,7 @@
     "node": ">= 22.18"
   },
   "dependencies": {
-    "@simular-ai/simulang-js": "^6.0.1",
+    "@simular-ai/simulang-js": "^7.0.1",
     "jimp": "^1.6.1"
   },
   "devDependencies": {

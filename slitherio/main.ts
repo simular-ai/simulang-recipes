@@ -27,7 +27,6 @@ import {
   Direction,
   Coordinate,
   screenshotFull,
-  Screen,
   GroundingModel,
   initLogger,
 } from '@simular-ai/simulang-js'
@@ -52,14 +51,20 @@ const browser = App.defaultBrowser().open('https://slither.io', FocusPolicy.Stea
 browser.enableAccessibility()
 await sleep(4000)
 
-const startTree = AccessibilityTree.fromForeground()
+// Resolve the browser window so we always target the screen the game is on,
+// even if it isn't the primary display.
+const [browserWindow] = browser.windows()
+if (!browserWindow) throw new Error('Could not find browser window')
+const browserScreen = browserWindow.screen()
+
+const startTree = AccessibilityTree.fromPid(browser.pid)
 const inputs = startTree.find(TraversalOrder.DepthFirst, AriaRole.Textbox, null, false, 3, true)
 if (inputs.length > 0 && inputs[0].refId !== undefined) {
   startTree.setValue(inputs[0].refId, '_')
   await sleep(300)
 }
 
-const startShot = screenshotFull(true, Screen.mainScreen())
+const startShot = screenshotFull(true, browserScreen)
 const [playX, playY] = model.ground(startShot, 'Play button')
 mouse.moveMouse(playX, playY, Coordinate.Abs)
 mouse.button(Button.Left, Direction.Click)
@@ -67,12 +72,13 @@ await sleep(3000)
 
 // ─── Screen geometry ──────────────────────────────────────────────────────────
 
-const [screenX, screenY, screenW, screenH] = Screen.mainScreen().dimensions()
+const screenBox = browserScreen.boundingBox()
+const screenW = screenBox.right - screenBox.left
 
 // The snake's head is always pinned to the centre of the game canvas.
 // Ground for the snake's eyes to get the exact (cx, cy) — no guesswork needed.
 console.log('🎯  Finding snake eyes to calibrate centre…')
-const calibShot = screenshotFull(true, Screen.mainScreen())
+const calibShot = screenshotFull(true, browserScreen)
 const [cx, cy] = model.ground(calibShot, 'eyes of the snake')
 console.log(`    centre → (${Math.round(cx)}, ${Math.round(cy)})`)
 
@@ -86,8 +92,19 @@ const cropY = Math.round(cy - cropH / 2)
 const __dirname = dirname(fileURLToPath(import.meta.url))
 let panicking = false
 
+// Pass the screen's bounding box so the worker's game-over check captures the
+// display the browser is on, not whatever happens to be the primary.
 const worker = new Worker(join(__dirname, 'worker.ts'), {
-  workerData: { cropX, cropY, cropW, cropH },
+  workerData: {
+    cropX,
+    cropY,
+    cropW,
+    cropH,
+    screenLeft: screenBox.left,
+    screenTop: screenBox.top,
+    screenWidth: screenW,
+    screenHeight: screenBox.bottom - screenBox.top,
+  },
 })
 
 let gameOver = false

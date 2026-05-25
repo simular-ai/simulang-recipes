@@ -21,7 +21,6 @@ import {
   Button,
   Coordinate,
   screenshotFull,
-  Screen,
 } from '@simular-ai/simulang-js'
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
@@ -89,7 +88,9 @@ weekSundayBase.setHours(0, 0, 0, 0)
 console.log(`  Scanning ${WEEKS} weeks…`)
 
 for (let w = 0; w < WEEKS; w++) {
-  const tree = AccessibilityTree.fromForeground()
+  // Resolve the AX tree by Calendar's PID — works even if another app has
+  // briefly stolen focus during the long scan loop.
+  const tree = AccessibilityTree.fromPid(cal.pid)
   const nodes = tree.find(TraversalOrder.DepthFirst, null, null, false, 3000, false)
 
   for (const n of nodes) {
@@ -187,7 +188,11 @@ await sleep(5000)
 
 console.log('🔍  Locating document body…')
 const model = GroundingModel.default()
-const screenshot = screenshotFull(true, Screen.mainScreen())
+// Capture the screen Safari is actually on — `Window.screen()` matches the
+// OS's "owning" display, so this is correct on multi-monitor setups.
+const safariScreen = safari.windows()[0]?.screen()
+if (!safariScreen) throw new Error('Safari window not found')
+const screenshot = screenshotFull(true, safariScreen)
 const [bodyX, bodyY] = model.ground(screenshot, 'document body text area below the title')
 mouse.moveMouse(bodyX, bodyY, Coordinate.Abs)
 mouse.button(Button.Left, Direction.Click)

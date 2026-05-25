@@ -12,9 +12,9 @@ Opens macOS Calendar in week view, reads upcoming events for the next 3 months d
 
 - `App.exactName('Calendar').open()` — launches Calendar and returns a live process handle
 - `instance.enableAccessibility()` — activates the accessibility tree for the app
-- `AccessibilityTree.fromForeground()` + `find()` — walks the Calendar week view tree; events appear as `StaticText` nodes whose `value` is the event title and `overallDescription` anchors them to a day of week
+- `AccessibilityTree.fromPid(cal.pid)` + `find()` — walks the Calendar week view tree by PID (works even if focus drifts during the long scan); events appear as `StaticText` nodes whose `value` is the event title and `overallDescription` anchors them to a day of week
 - `KeyboardController` — switches to week view (Cmd+2), jumps to today (Cmd+T), navigates forward week by week (Cmd+→)
-- `GroundingModel.default()` + `screenshotFull()` — locates the Google Docs body area visually, since the editor places the cursor in the title field by default
+- `safari.windows()[0].screen()` + `screenshotFull()` — captures the screen Safari is actually on (correct on multi-monitor setups), then `GroundingModel.default()` locates the Google Docs body area visually
 - `MouseController` — clicks the grounding coordinates to focus the body
 - `Clipboard.pasteText()` — inserts the full formatted document in one shot
 

@@ -6,13 +6,17 @@ import { workerData, parentPort } from 'node:worker_threads'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Jimp } from 'jimp'
-import { screenshotCropped, screenshotFull, Screen, AskModel } from '@simular-ai/simulang-js'
+import { screenshotCropped, AskModel } from '@simular-ai/simulang-js'
 
-const { cropX, cropY, cropW, cropH } = workerData as {
+const { cropX, cropY, cropW, cropH, screenLeft, screenTop, screenWidth, screenHeight } = workerData as {
   cropX: number
   cropY: number
   cropW: number
   cropH: number
+  screenLeft: number
+  screenTop: number
+  screenWidth: number
+  screenHeight: number
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -129,7 +133,10 @@ while (true) {
 
   // ── Game-over detection (every 30 iterations) ────────────────────────────
   if (iteration % 30 === 0) {
-    const fullShot = screenshotFull(true, Screen.mainScreen())
+    // Crop the browser's display directly — Screen handles can't cross thread
+    // boundaries, but the bounding box passed from the main thread tells us
+    // exactly which monitor region to capture.
+    const fullShot = screenshotCropped(screenLeft, screenTop, screenWidth, screenHeight, true)
     fullShot.shrink(960, 540)
     fullShot.compress(40)
     const answer = AskModel.default().ask(

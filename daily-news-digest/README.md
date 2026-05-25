@@ -12,7 +12,7 @@ Opens your default browser, visits CNN, NY Times, BBC News, The Guardian, and Ha
 
 - `App.defaultBrowser().open()` — opens a URL in the user's default browser and returns a live process handle
 - `instance.enableAccessibility()` — activates the accessibility tree for the browser process (required before reading)
-- `AccessibilityTree.fromForeground()` — attaches to the currently active window, which is more reliable than `fromPid()` for multi-process browsers like Chrome
+- `AccessibilityTree.fromPid(instance.pid)` — reads the AX tree directly by PID, so the script is robust to focus changes between sources (notifications, other apps stealing focus)
 - `tree.find(order, role, ...)` — walks the accessibility tree and returns nodes matching an ARIA role (`Heading`, then `Link` as fallback)
 - `App.exactName('Notes').open()` — launches Apple Notes
 - `KeyboardController` + `Key.Meta` — sends Cmd+N to create a new note
@@ -41,7 +41,7 @@ Tip: run `simulang run -i` to open an interactive REPL and explore the accessibi
 ```
 For each news source:
   [Open URL in browser] → [enableAccessibility()] → [wait 3.5s]
-  → [fromForeground()] → [find(Heading) or find(Link)]
+  → [fromPid(instance.pid)] → [find(Heading) or find(Link)]
   → [clean + filter headlines]
 
 [Format digest] → [Open Notes] → [Cmd+N] → [pasteText()]
@@ -52,4 +52,4 @@ For each news source:
 - **NYT paywall** — only headlines visible without a login are captured. Expect fewer results there than other sources.
 - **Noise filtering** — accessibility trees are noisy: they include nav links, skip links, image alt texts, video durations, and photo captions alongside real headlines. The `clean()` function normalises raw text (strips video durations, newlines, timestamps) and the `NOISE` array filters known junk patterns. If a site redesigns and odd entries reappear, those are the two places to tweak.
 - **Adding sources** — extend the `SOURCES` array with any `{ label, url }` pair. Sites that don't use heading tags (like Hacker News) are handled automatically by the `Link` fallback.
-- **Chrome vs Safari** — tested with Chrome. Safari exposes its accessibility tree slightly differently; if you hit issues, try switching your default browser.
+- **Browser choice** — tested with Chrome. Safari exposes its accessibility tree slightly differently and may need extra tweaks to the heading/link selectors. If your default browser is Safari and you hit issues, swap `App.defaultBrowser()` in `openUrl()` for a specific one — e.g. `App.exactName('Google Chrome')` or `App.exactName('Firefox')` — so the recipe picks the browser it was tested against regardless of OS settings. (Chrome is multi-process, but `AccessibilityTree.fromPid()` still works against the browser's main process PID returned by `instance.pid` — no need to chase the foreground renderer.)
