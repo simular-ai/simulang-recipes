@@ -8,7 +8,7 @@
     "client": "npm run build && npm run start"
   },
   "dependencies": {
-    "express": "^4.19.0",
+    "express": "^5.2.1",
     "pdfjs-dist": "^4.10.38",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
