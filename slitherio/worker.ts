@@ -29,9 +29,9 @@ const MIN_COMPONENT_SIZE = 800 // ignore small blobs — snake bodies are large,
 const THREAT_THRESHOLD = 2 // ≥ this many large components = enemy nearby
 const DEBUG_EVERY = 20 // save debug image every N iterations
 
-// ─── Connected components with 5px radius connectivity ────────────────────────
+// ─── Connected components with 8px radius connectivity ────────────────────────
 // Instead of 4-connected neighbors, each foreground pixel connects to any other
-// foreground pixel within a 5px radius. This bridges small gaps in the snake
+// foreground pixel within an 8px radius. This bridges small gaps in the snake
 // body when it curves near the crop boundary, preventing our own snake from
 // being split into 2 components.
 const CONNECT_R = 8
